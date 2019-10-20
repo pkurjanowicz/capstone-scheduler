@@ -1,19 +1,16 @@
-To start everything..
+To start everything, in terminal
 
 pipenv --three #installs new virtual environment for folder
 pipenv istall 'package'
 
 from capstone-scheduler/client, run
-`
 npm run build
-`
+
 from capstone-scheduler/server, run
 python main.py
 
-to work with the database
-`
+to work with the database, from capstone-scheduler/db
 sqlite3 userdata.db
-`
 
 ---------------------------------------
 

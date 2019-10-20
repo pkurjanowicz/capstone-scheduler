@@ -47,19 +47,6 @@ export default {
     //     }
     //   })
     // }
-      submitNewUsername() {
-      axios.post('/usersignup', { new_user: this.newUserName })
-      .then((response) => {
-        console.log("posted")
-        this.newUserName = ""
-      }, (error) => {
-        // console.log(split(error))
-        console.log(error)
-      })
-      .catch(() => {
-        this.duplicate = "Username already taken"
-      })
-    }
   }
 }
 </script>
