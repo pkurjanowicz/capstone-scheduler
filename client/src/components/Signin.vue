@@ -1,14 +1,25 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
+  <div class="signin">
+    <p>Please enter your username</p>
+    <input v-model="userName"/>
+    <button @click="submitUsername">Login</button>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'Signin',
   props: {
-    msg: String
+  },
+  data() {
+    return {
+      userName: ''
+    }
+  },
+  methods: {
+    submitUsername() {
+      
+    }
   }
 }
 </script>

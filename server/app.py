@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template
-from userAPI import user_api, User
+from userAPI import user_api, User, Event
 from db_instance import db
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
