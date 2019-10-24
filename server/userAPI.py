@@ -12,6 +12,12 @@ def serve_all_users():
     user_usernames = [{"id": user.id, "username": user.username} for user in user_instances]
     return jsonify({"usernames": user_usernames})
 
+@user_api.route('/getevents', methods=['GET'])
+def serve_all_events():
+    event_instances = db.session.query(Event).all()
+    user_events = [{"event_name": event.event_name, "details": event.details, "owner_id":event.owner_id} for event in event_instances]
+    return jsonify({"all_events": user_events})
+
 @user_api.route('/usersignup', methods=['POST'])
 def add_user():
     new_user = User()
@@ -39,8 +45,9 @@ def add_event():
     new_event.start_time = final_datetime
     new_event.event_name = request.json["event_name"]
     new_event.details = request.json["event_details"]
+    new_event.owner_id = request.json["owner_id"]
     # new_event.end_time = request.json["end_time"]
-    if new_event.event_name != "":
+    if new_event.event_name != "" and new_event.details != "":
         db.session.add(new_event)
         db.session.commit()
     return jsonify(success=True)

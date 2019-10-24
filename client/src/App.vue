@@ -17,24 +17,19 @@
     <p>Enter event details here.</p>
     <textarea v-model="eventDetails"/>
     <br>
-    <p id="failedEntry" v-if="failedEntry">You must be logged in, set a time, and enter an event name</p>
+    <p id="failedEntry" v-if="failedEntry">You must be logged in, set a time, enter an event name, and enter a description.</p>
     <button @click="submitNewEvent">Submit</button>
 
     <hr>
 
-    <p>User id #: {{ currentUserID }}</p>
-    <p>event name: {{ eventName }}</p>
-    <p>event details: {{ eventDetails }}</p>
-    <p>current user: {{ currentUser }}</p>
-    <p>converted datetime: {{ convertedDatetime }}</p>
-    <!-- <p>range: {{ range }}</p> -->
-    <p>timezone: {{ timezone }}</p>
-    <p>timezoneStart: {{ timezoneStart }}</p>
-    <p>timezoneEnd: {{ timezoneEnd }}</p>
-
-    <hr>
-
+    <p>current user id {{ currentUserID }}</p>
+    <p>event response {{ eventResponseName }}</p>
     <h2>My events</h2>
+    <button @click="getEvents">List my events</button>
+    <ul>
+      <li v-for="event in eventResponseName" v-bind:key="event">{{ event }}</li>
+      <li v-for="event in eventResponseDetails" v-bind:key="event">{{ event }}</li>
+    </ul>
 
     
   </div>
@@ -53,6 +48,8 @@ export default {
       currentUserID: '',
       eventName: '',
       eventDetails: '',
+      eventResponseName: [],
+      eventResponseDetails: [],
       sharedUsers: [],
       checkbox: false,
       datetime: "",
@@ -173,6 +170,23 @@ export default {
       this.currentUserID = ''
       this.currentUser = ''
     },
+    getEvents() {
+      axios.get('/getevents')
+      .then((response) => {
+        console.log(response)
+        console.log("Get events")
+        let currentResponse = response.data.all_events
+        for (let i = 0; i < currentResponse.length; i++) {
+          console.log("wat")
+          if (this.currentUserID === currentResponse[i].owner_id) {
+            console.log(currentResponse[i].event_name)
+            this.eventResponseName.push(currentResponse[i].event_name)
+            this.eventResponseDetails.push(currentResponse[i].details)
+            console.log(typeof(response.data.all_events))
+          }
+        }
+      })
+    }
   }
 }
 </script>
