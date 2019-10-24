@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from db_instance import db
 from models import User, Event
+from datetime import datetime
 import pytz
 
 user_api = Blueprint('user_api', __name__)
@@ -22,16 +23,26 @@ def add_user():
 @user_api.route('/newevent', methods=['POST'])
 def add_event():
     new_event = Event()
+    year = request.json["year"]
+    month = request.json["month"]
+    day = request.json["day"]
+    hour = request.json["hour"]
+    minute = request.json["minute"]
+    second = request.json["second"]
+
+    final_datetime = datetime(int(year), int(month), int(day), int(hour), int(minute), int(second))
+
     # local_tz = pytz.timezone(new_event.timezone)
-    python_start_time = new_event.start_time
-    print(python_start_time)
+    # python_start_time = new_event.start_time
+    # print(python_start_time)
     
-    # new_event.event_name = request.json["event_name"]
-    # python_start_time = request.json["start_time"]
+    new_event.start_time = final_datetime
+    new_event.event_name = request.json["event_name"]
+    new_event.details = request.json["event_details"]
     # new_event.end_time = request.json["end_time"]
-    # new_event.details = request.json["event_details"]
-    db.session.add(new_event)
-    db.session.commit()
+    if new_event.event_name != "":
+        db.session.add(new_event)
+        db.session.commit()
     return jsonify(success=True)
 
 # @user_api.route('/user', methods=['PATCH'])
