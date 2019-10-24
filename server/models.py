@@ -8,6 +8,7 @@ class User(db.Model):
 
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    timezone = ""
     event_name = db.Column(db.String(500))
     start_time = db.Column(db.DateTime, default=datetime.utcnow)
     end_time = db.Column(db.DateTime, default=datetime.utcnow)

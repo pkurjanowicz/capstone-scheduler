@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from db_instance import db
 from models import User, Event
+import pytz
 
 user_api = Blueprint('user_api', __name__)
 
@@ -15,6 +16,21 @@ def add_user():
     new_user = User()
     new_user.username = request.json["new_user"]
     db.session.add(new_user)
+    db.session.commit()
+    return jsonify(success=True)
+
+@user_api.route('/newevent', methods=['POST'])
+def add_event():
+    new_event = Event()
+    # local_tz = pytz.timezone(new_event.timezone)
+    python_start_time = new_event.start_time
+    print(python_start_time)
+    
+    # new_event.event_name = request.json["event_name"]
+    # python_start_time = request.json["start_time"]
+    # new_event.end_time = request.json["end_time"]
+    # new_event.details = request.json["event_details"]
+    db.session.add(new_event)
     db.session.commit()
     return jsonify(success=True)
 
