@@ -18,10 +18,7 @@ https://docs.sqlalchemy.org/en/13/orm/tutorial.html
 
 ---------------------------------------
 
-run flask server from capstone-scheduler/server
-`
-python main.py
-`
+Use 'vue2-datepicker' and 'moment.js' to manage time
 
 -----------------------------------------------
 

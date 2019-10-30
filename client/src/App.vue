@@ -8,9 +8,11 @@
     <hr>
 
     <input type="checkbox" id="rangeCheckbox" v-model="checkbox">
-    <label for="rangeCheckbox">Check this box to select a range.</label>
+    <label for="rangeCheckbox">Check this box to select a start and end time.</label>
     <br>
-    <date-picker v-if="!checkbox" v-model="datetime" lang="en" confirm type="datetime"  format="YYYY-MM-DD HH:mm:ss" value-type="format" width="500" placeholder="Select Date and Time"></date-picker>
+    <p v-if="!checkbox">Select start time.</p>
+    <p v-if="checkbox">Select start and end time.</p>
+    <date-picker v-if="!checkbox" v-model="datetime" lang="en" confirm type="datetime"  format="YYYY-MM-DD HH:mm:ss" width="500" placeholder="Select Date and Time"></date-picker>
     <date-picker v-if="checkbox" v-model="range" lang="en" range confirm type="datetime" format="YYYY-MM-DD HH:mm:ss" value-type="format" width="500" placeholder="Select Date and Time"></date-picker>
     <p>Enter event name here.</p>
     <input v-model="eventName"/>
@@ -22,15 +24,23 @@
 
     <hr>
 
-    <p>current user id {{ currentUserID }}</p>
-    <p>event response {{ eventResponseName }}</p>
     <h2>My events</h2>
-    <button @click="getEvents">List my events</button>
-    <ul>
-      <li v-for="event in eventResponseName" v-bind:key="event">{{ event }}</li>
-      <li v-for="event in eventResponseDetails" v-bind:key="event">{{ event }}</li>
-    </ul>
+    <button @click="getEvents">Update my events</button>
+    
+    <br>
+    <p>range {{ this.range }}</p>
+    <p>datetime {{ this.datetime }}</p>
+    <p>zipped {{ this.zippedEvent }}</p>
 
+    <button @click="test">test</button>
+    <div id=eventList>
+      <ul v-for="(event, index) in zippedEvent" :key="index">
+        <li> {{ event[0] }} </li>
+        <li> {{ event[1] }} </li>
+        <li> {{ event[2] }} </li>
+        <p>---------------------------------</p>
+      </ul>
+    </div>
     
   </div>
 </template>
@@ -39,20 +49,26 @@
 import DatePicker from 'vue2-datepicker'
 import axios from 'axios'
 
+let moment = require('moment')
+
 export default {
   name: 'app',
   data() {
     return {
+      moment: moment,
       inputUserName: '',
       currentUser: '',
       currentUserID: '',
       eventName: '',
       eventDetails: '',
-      eventResponseName: [],
+      eventResponseNames: [],
       eventResponseDetails: [],
+      eventResponseStartTime: [],
+      eventResponseEndTime: [],
+      zippedEvent: [],
       sharedUsers: [],
       checkbox: false,
-      datetime: "",
+      datetime: '',
       convertedDatetime: [],
       timezone: [],
       timezoneStart: 0,
@@ -68,75 +84,45 @@ export default {
   },
   methods: {
     submitNewEvent() {
-      if(this.currentUserID == "" || this.eventName == "" || this.datetime =="") {
+      this.clearEventList()
+      let m = moment.utc()
+      if (this.range != []) {
+        this.datetime = this.range[0]
+        this.datetime = m.toISOString()
+        this.endTime = this.range[1]
+        this.endTime = m.toISOString()
+        console.log("times ", this.datetime)
+        console.log("times ", this.datetime)
+      }
+      if (this.currentUserID == "" || this.eventName == "" || this.datetime == "") {
         this.failedEntry = true
-        console.log("Failed entry")
         return
       }
-      let year = 0
-      let month = 0
-      let day = 0
-      let hour = 0
-      let minute = 0
-      let second = 0
-    // look up 'regex' for details on the next line.
-      this.convertedDatetime = this.datetime.split(/[-:\s]/)
-      year = this.convertedDatetime[0]
-      month = this.convertedDatetime[1]
-      day = this.convertedDatetime[2]
-      hour = this.convertedDatetime[3]
-      minute = this.convertedDatetime[4]
-      second = this.convertedDatetime[5]
 
-    // this.datetime = this.datetime.toString().split(" ")
-    //   this.convertedDatetime.push(this.datetime[3], month.toString(), this.datetime[2])
-    //   this.convertedDatetime = this.convertedDatetime.join("-")
-    //   this.convertedDatetime = this.convertedDatetime + " " + this.datetime[4]
-    //   for (let i = 0; i < this.datetime.length; i++) {
-    //     if (this.datetime[i].includes("(")) {
-    //       this.timezoneStart = i
-    //     }
-    //     if (this.datetime[i].includes(")")) {
-    //       this.timezoneEnd = i
-    //     }
-    //   }
-    //   this.timezone = this.datetime.slice(this.timezoneStart, (this.timezoneEnd + 1))
-    //   this.timezone = this.timezone.join("_")
-    //   this.timezone = this.timezone.replace("(", "")
-    //   this.timezone = this.timezone.replace(")", "")
-    //   console.log(typeof(this.timezone))    let month = ""
-    //   // convert month from letters to numbers. Ex: Mar -> 03
-    //   month = this.datetime.getMonth() + 1
-    //   if (month < 10) {
-    //     month = "0" + month
-    //   }
-    //   this.datetime = this.datetime.toString().split(" ")
-    //   this.convertedDatetime.push(this.datetime[3], month.toString(), this.datetime[2])
-    //   this.convertedDatetime = this.convertedDatetime.join("-")
-    //   this.convertedDatetime = this.convertedDatetime + " " + this.datetime[4]
-    //   for (let i = 0; i < this.datetime.length; i++) {
-    //     if (this.datetime[i].includes("(")) {
-    //       this.timezoneStart = i
-    //     }
-    //     if (this.datetime[i].includes(")")) {
-    //       this.timezoneEnd = i
-    //     }
-    //   }
-    //   this.timezone = this.datetime.slice(this.timezoneStart, (this.timezoneEnd + 1))
-    //   this.timezone = this.timezone.join("_")
-    //   this.timezone = this.timezone.replace("(", "")
-    //   this.timezone = this.timezone.replace(")", "")
-    //   console.log(typeof(this.timezone))
-
-      axios.post('/newevent', { owner_id: this.currentUserID, event_name: this.eventName, event_details: this.eventDetails, year: year, month: month, day: day, hour: hour, minute: minute, second: second })
+      axios.post('/newevent', { owner_id: this.currentUserID, event_name: this.eventName, event_details: this.eventDetails, event_start_time: this.datetime})
       .then(() => {
         
       })
-        console.log("event created!")
         this.eventName = ''
         this.eventDetails = ''
-        this.datetime = null
+        this.datetime = ''
         this.range = ''
+        this.endTime = ''
+        this.getEvents()
+    },
+    test() {
+      let m = moment.utc()
+      this.datetime = m.toISOString()
+      this.endTime = m.toISOString()
+    },
+    clearEventList() {
+      console.log("got into clear")
+      this.zippedEvent = []
+      console.log("clear ", this.zippedEvent)
+      const listID = document.getElementById("eventList")
+      if (listID.firstChild) {
+        while (listID.firstChild) listID.removeChild(listID.firstChild)
+      }
     },
     getCurrentUserID() {
       axios.get('/user')
@@ -151,40 +137,51 @@ export default {
     },
     submitNewUsername() {
       axios.post('/usersignup', { new_user: this.inputUserName })
-      .then((response) => {
+      .then(() => {
         this.currentUser = this.inputUserName
         this.inputUserName = ""
         this.getCurrentUserID()
-      }, (error) => {
+        this.getEvents()
+      }, () => {
         this.currentUser = this.inputUserName
         this.inputUserName = ''
         this.getCurrentUserID()
-        console.log("error ", currentUserID)
+        this.getEvents()
       })
       .catch(() => {
-        console.log("catch")
         this.getCurrentUserID()
+        this.getEvents()
       })
     },
     switchUser() {
       this.currentUserID = ''
       this.currentUser = ''
+      this.clearEventList()
     },
     getEvents() {
+      this.clearEventList()
+      console.log("getEvents ", this.zippedEvent)
       axios.get('/getevents')
       .then((response) => {
-        console.log(response)
-        console.log("Get events")
         let currentResponse = response.data.all_events
+        console.log(currentResponse)
         for (let i = 0; i < currentResponse.length; i++) {
-          console.log("wat")
           if (this.currentUserID === currentResponse[i].owner_id) {
-            console.log(currentResponse[i].event_name)
-            this.eventResponseName.push(currentResponse[i].event_name)
+            this.eventResponseNames.push(currentResponse[i].event_name)
             this.eventResponseDetails.push(currentResponse[i].details)
-            console.log(typeof(response.data.all_events))
+            this.eventResponseStartTime.push(currentResponse[i].datetime)
+            this.eventResponseEndTime.push(currentResponse[i].range)
           }
         }
+        for (let i = 0; i < this.eventResponseNames.length; i++) {
+          // Sometimes this function fails to execute this for loop. I haven't found the cause yet.
+          let stringConvertStartTime = this.eventResponseDatetime[i].toString()
+          let stringConvertEndTime = this.eventResponseDatetime[i].toString()
+          this.zippedEvent.push([stringConvertStartTime, stringConvertEndTime, this.eventResponseNames[i], this.eventResponseDetails[i]])
+        }
+        this.eventResponseNames = []
+        this.eventResponseDetails = []
+        this.eventResponseDatetime = []
       })
     }
   }
