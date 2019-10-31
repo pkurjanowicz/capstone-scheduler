@@ -175,8 +175,8 @@ export default {
       axios.get('/getevents')
       .then((response) => {
         let currentResponse = response.data.all_events
-        console.log(currentResponse)
-        for (let i = 0; i < currentResponse.length; i++) {
+        console.log("Current response", currentResponse)
+        for (let i = 0; i < currentResponse.length - 1; i++) {
           if (this.currentUserID === currentResponse[i].owner_id) {
             this.eventResponseNames.push(currentResponse[i].event_name)
             this.eventResponseDetails.push(currentResponse[i].details)
@@ -184,15 +184,15 @@ export default {
             this.eventResponseEndTime.push(currentResponse[i].range)
           }
         }
-        for (let i = 0; i < this.eventResponseNames.length; i++) {
+        console.log("Event Response Names: ", this.eventResponseNames)
+        for (let i = 0; i < this.eventResponseNames.length - 1; i++) {
           // Sometimes this function fails to execute this for loop. I haven't found the cause yet.
-          let stringConvertStartTime = this.eventResponseDatetime[i].toString()
-          let stringConvertEndTime = this.eventResponseDatetime[i].toString()
-          this.zippedEvent.push([stringConvertStartTime, stringConvertEndTime, this.eventResponseNames[i], this.eventResponseDetails[i]])
+          let stringConvertStartTime = this.eventResponseStartTime[i].toString()
+          this.zippedEvent.push([stringConvertStartTime, this.eventResponseNames[i], this.eventResponseDetails[i]])
         }
         this.eventResponseNames = []
         this.eventResponseDetails = []
-        this.eventResponseDatetime = []
+        this.eventResponseStartTime = []
       })
     }
   }
