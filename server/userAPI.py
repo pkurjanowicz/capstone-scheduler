@@ -29,14 +29,14 @@ def add_user():
 def add_event():
     new_event = Event()
     
-    new_event.start_time = request.json["event_start_time"]
-    start_time_utc = new_event.start_time.datetime.utcnow()
+    startTimeObject = datetime(int(request.json["event_start_time"]))
+    new_event.start_time = startTimeObject
+    # new_event.start_time = request.json["event_start_time"]
     new_event.event_name = request.json["event_name"]
     new_event.details = request.json["event_details"]
     new_event.owner_id = request.json["owner_id"]
     # if new_event.end_time != "":
-    new_event.end_time = request.json["event_end_time"]
-    end_time_utc = new_event.end_time.datetime.utcnow()
+    #     new_event.end_time = request.json["event_end_time"]
     if new_event.owner_id != "" and new_event.event_name != "" and new_event.start_time != "":
         db.session.add(new_event)
         db.session.commit()

@@ -12,7 +12,7 @@
     <br>
     <p v-if="!checkbox">Select start time.</p>
     <p v-if="checkbox">Select start and end time.</p>
-    <date-picker v-if="!checkbox" v-model="datetime" lang="en" confirm type="datetime"  format="YYYY-MM-DD HH:mm:ss" width="500" placeholder="Select Date and Time"></date-picker>
+    <date-picker v-if="!checkbox" v-model="datetime" lang="en" confirm type="datetime"  format="YYYY-MM-DD HH:mm:ss" value-type="format" width="500" placeholder="Select Date and Time"></date-picker>
     <date-picker v-if="checkbox" v-model="range" lang="en" range confirm type="datetime" format="YYYY-MM-DD HH:mm:ss" value-type="format" width="500" placeholder="Select Date and Time"></date-picker>
     <p>Enter event name here.</p>
     <input v-model="eventName"/>
@@ -75,7 +75,7 @@ export default {
       timezoneEnd: 0,
       startTime: '',
       endTime: '',
-      range: '',
+      range: [],
       failedEntry: false
     }        
   },
@@ -85,15 +85,24 @@ export default {
   methods: {
     submitNewEvent() {
       this.clearEventList()
-      let m = moment.utc()
+      // let m = moment.utc()
       if (this.range != []) {
         this.datetime = this.range[0]
-        this.datetime = m.toISOString()
-        this.endTime = this.range[1]
-        this.endTime = m.toISOString()
-        console.log("times ", this.datetime)
-        console.log("times ", this.datetime)
+
+        // this.datetime = m.toISOString()
+        // this.datetime = m.format("YYYY-MM-DD HH:mm:ss")
+        // this.endTime = this.range[1]
+
+        // let mEndTime = this.range[1]
+        // this.endTime = mEndTime.toISOString()
+        // this.datetime = mEndTime.format("YYYY-MM-DD HH:mm:ss")
+        // console.log("times ", mEndTime)
       }
+      let mDatetime = moment.utc(this.datetime)
+      this.datetime = mDatetime.toISOString()
+      this.datetime = mDatetime.format("YYYY-MM-DD HH:mm:ss")
+      console.log("Passed format: ", this.datetime)
+
       if (this.currentUserID == "" || this.eventName == "" || this.datetime == "") {
         this.failedEntry = true
         return
@@ -111,9 +120,11 @@ export default {
         this.getEvents()
     },
     test() {
-      let m = moment.utc()
-      this.datetime = m.toISOString()
-      this.endTime = m.toISOString()
+      let mDatetime = moment.utc(this.datetime)
+      this.datetime = mDatetime.toISOString()
+      this.datetime = mDatetime.format("YYYY-MM-DD HH:mm:ss")
+      // this.datetime = m.format("YYYY-MM-DD HH:mm:ss")
+      // this.endTime = m.toISOString()
     },
     clearEventList() {
       console.log("got into clear")
