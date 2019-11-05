@@ -12,8 +12,8 @@
     <br>
     <p v-if="!checkbox">Select start time.</p>
     <p v-if="checkbox">Select start and end time.</p>
-    <date-picker v-if="!checkbox" v-model="datetime" lang="en" confirm type="datetime"  format="YYYY-MM-DD HH:mm:ss" value-type="format" width="500" placeholder="Select Date and Time"></date-picker>
-    <date-picker v-if="checkbox" v-model="range" lang="en" range confirm type="datetime" format="YYYY-MM-DD HH:mm:ss" value-type="format" width="500" placeholder="Select Date and Time"></date-picker>
+    <date-picker v-if="!checkbox" v-model="datetime" lang="en" confirm type="datetime"  format="YYYY-MM-DD HH:mm:ss" width="500" placeholder="Select Date and Time"></date-picker>
+    <date-picker v-if="checkbox" v-model="range" lang="en" range confirm type="datetime" format="YYYY-MM-DD HH:mm:ss" width="500" placeholder="Select Date and Time"></date-picker>
     <p>Enter event name here.</p>
     <input v-model="eventName"/>
     <p>Enter event details here.</p>
@@ -28,16 +28,14 @@
     <button @click="getEvents">Update my events</button>
     
     <br>
-    <p>range {{ this.range }}</p>
-    <p>datetime {{ this.datetime }}</p>
-    <p>zipped {{ this.zippedEvent }}</p>
 
-    <button @click="test">test</button>
     <div id=eventList>
       <ul v-for="(event, index) in zippedEvent" :key="index">
         <li> {{ event[0] }} </li>
         <li> {{ event[1] }} </li>
         <li> {{ event[2] }} </li>
+        <li> {{ event[3] }} </li>
+        <button @click="deleteEvent(event[4])">Delete event</button>
         <p>---------------------------------</p>
       </ul>
     </div>
@@ -61,15 +59,16 @@ export default {
       currentUserID: '',
       eventName: '',
       eventDetails: '',
+      eventID: '',
       eventResponseNames: [],
       eventResponseDetails: [],
       eventResponseStartTime: [],
       eventResponseEndTime: [],
+      eventResponseID: [],
       zippedEvent: [],
       sharedUsers: [],
       checkbox: false,
       datetime: '',
-      convertedDatetime: [],
       timezone: [],
       timezoneStart: 0,
       timezoneEnd: 0,
@@ -85,51 +84,49 @@ export default {
   methods: {
     submitNewEvent() {
       this.clearEventList()
-      // let m = moment.utc()
-      if (this.range != []) {
-        this.datetime = this.range[0]
+      this.setStartTime()
 
-        // this.datetime = m.toISOString()
-        // this.datetime = m.format("YYYY-MM-DD HH:mm:ss")
-        // this.endTime = this.range[1]
+      // Sets start time to UTC
+      let mStartTime = moment.utc(this.startTime)
+      this.startTime = mStartTime.toISOString()
+      this.startTime = mStartTime.format("YYYY-MM-DD HH:mm:ss")
 
-        // let mEndTime = this.range[1]
-        // this.endTime = mEndTime.toISOString()
-        // this.datetime = mEndTime.format("YYYY-MM-DD HH:mm:ss")
-        // console.log("times ", mEndTime)
-      }
-      let mDatetime = moment.utc(this.datetime)
-      this.datetime = mDatetime.toISOString()
-      this.datetime = mDatetime.format("YYYY-MM-DD HH:mm:ss")
-      console.log("Passed format: ", this.datetime)
+      // Sets end time to UTC.
+      let mEndTime = moment.utc(this.range[1])
+      this.endTime = mEndTime.toISOString()
+      this.endTime = mEndTime.format("YYYY-MM-DD HH:mm:ss")
 
-      if (this.currentUserID == "" || this.eventName == "" || this.datetime == "") {
+      if (this.currentUserID == "" || this.eventName == "" || this.startTime == "") {
         this.failedEntry = true
         return
       }
 
-      axios.post('/newevent', { owner_id: this.currentUserID, event_name: this.eventName, event_details: this.eventDetails, event_start_time: this.datetime})
+      axios.post('/newevent', { owner_id: this.currentUserID, event_name: this.eventName, event_details: this.eventDetails, event_start_time: this.startTime, event_end_time: this.endTime})
       .then(() => {
         
       })
         this.eventName = ''
         this.eventDetails = ''
-        this.datetime = ''
+        this.startTime = ''
         this.range = ''
         this.endTime = ''
         this.getEvents()
     },
-    test() {
-      let mDatetime = moment.utc(this.datetime)
-      this.datetime = mDatetime.toISOString()
-      this.datetime = mDatetime.format("YYYY-MM-DD HH:mm:ss")
-      // this.datetime = m.format("YYYY-MM-DD HH:mm:ss")
-      // this.endTime = m.toISOString()
+    deleteEvent(id) {
+      axios.delete('/deleteevent', {data: { event_id: id } })
+      .then(() => {
+        this.getEvents()
+      })
+    },
+    setStartTime() {
+      if (this.range != []) {
+        this.startTime = this.range[0]
+        return
+      }
+      this.startTime = this.datetime
     },
     clearEventList() {
-      console.log("got into clear")
       this.zippedEvent = []
-      console.log("clear ", this.zippedEvent)
       const listID = document.getElementById("eventList")
       if (listID.firstChild) {
         while (listID.firstChild) listID.removeChild(listID.firstChild)
@@ -147,6 +144,7 @@ export default {
       })
     },
     submitNewUsername() {
+      // I believe there is a race condition in here that sometimes prevents the list of events from updating on the webpage.
       axios.post('/usersignup', { new_user: this.inputUserName })
       .then(() => {
         this.currentUser = this.inputUserName
@@ -171,28 +169,28 @@ export default {
     },
     getEvents() {
       this.clearEventList()
-      console.log("getEvents ", this.zippedEvent)
       axios.get('/getevents')
       .then((response) => {
         let currentResponse = response.data.all_events
-        console.log(currentResponse)
         for (let i = 0; i < currentResponse.length; i++) {
           if (this.currentUserID === currentResponse[i].owner_id) {
+
             this.eventResponseNames.push(currentResponse[i].event_name)
             this.eventResponseDetails.push(currentResponse[i].details)
-            this.eventResponseStartTime.push(currentResponse[i].datetime)
-            this.eventResponseEndTime.push(currentResponse[i].range)
+            this.eventResponseStartTime.push(currentResponse[i].start_time)
+            this.eventResponseEndTime.push(currentResponse[i].end_time)
+            this.eventResponseID.push(currentResponse[i].id)
           }
         }
         for (let i = 0; i < this.eventResponseNames.length; i++) {
-          // Sometimes this function fails to execute this for loop. I haven't found the cause yet.
-          let stringConvertStartTime = this.eventResponseDatetime[i].toString()
-          let stringConvertEndTime = this.eventResponseDatetime[i].toString()
-          this.zippedEvent.push([stringConvertStartTime, stringConvertEndTime, this.eventResponseNames[i], this.eventResponseDetails[i]])
+          let stringConvertStartTime = this.eventResponseStartTime[i].toString()
+          let stringConvertEndTime = this.eventResponseEndTime[i].toString()
+          this.zippedEvent.push([stringConvertStartTime, stringConvertEndTime, this.eventResponseNames[i], this.eventResponseDetails[i], this.eventResponseID[i]])
         }
         this.eventResponseNames = []
         this.eventResponseDetails = []
-        this.eventResponseDatetime = []
+        this.eventResponseStartTime = []
+        this.eventResponseEndTime = []
       })
     }
   }
