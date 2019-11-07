@@ -277,4 +277,7 @@ export default {
   button {
     font-weight: bold;
   }
+  li {
+    font-weight: bold;
+  }
 </style>
