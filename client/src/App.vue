@@ -92,7 +92,7 @@ export default {
       this.startTime = mStartTime.format("YYYY-MM-DD HH:mm:ss")
 
       // Sets end time to UTC.
-      let mEndTime = moment.utc(this.range[1])
+      let mEndTime = moment.utc(this.endTime)
       this.endTime = mEndTime.toISOString()
       this.endTime = mEndTime.format("YYYY-MM-DD HH:mm:ss")
 
@@ -119,11 +119,14 @@ export default {
       })
     },
     setStartTime() {
-      if (this.range != []) {
+      if (this.range.length != 0) {
         this.startTime = this.range[0]
+        this.endTime = this.range[1]
         return
       }
       this.startTime = this.datetime
+      this.endTime = this.datetime
+      return
     },
     clearEventList() {
       this.zippedEvent = []
