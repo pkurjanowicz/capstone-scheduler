@@ -1,13 +1,28 @@
 <template>
   <div id="app">
-    <input v-if="this.currentUser == '' " v-model="inputUserName"/>
+    <!-- Crude login -->
+    <input v-if="this.currentUser == '' " v-model="inputUserName" v-on:keyup.enter="submitNewUsername"/>
     <button v-if="this.currentUser == '' " @click="submitNewUsername">Enter a username</button>
     <p v-if="this.currentUser != '' ">Welcome {{ currentUser }}!</p>
     <button v-if="this.currentUser != '' " @click="switchUser">Change user</button>
-
     <hr>
 
-    <input type="checkbox" id="rangeCheckbox" v-model="checkbox">
+    <!-- Make API call to find time at specific location -->
+    <input type="checkbox" class="check" id="timeCheckbox" v-model="timeCheckbox">
+    <label for="timeCheckbox">Check this box to find the current time for a specific location</label>
+    <br>
+    <div v-if="this.timeCheckbox == true">
+      <button @click="updateZones" v-on:keyup.enter="updateZones">Update timezones</button>
+      <select v-model="chosenTimezoneNumber" @click="selectTimezone">
+        <option v-for="(zone, key) in zones" :value="key">
+          {{ zone }}
+        </option>
+      </select>
+      <p>{{ chosenTimezoneString }}</p>
+    </div>
+
+    <!-- Enter event information -->
+    <input type="checkbox" class="check" id="rangeCheckbox" v-model="checkbox">
     <label for="rangeCheckbox">Check this box to select a start and end time.</label>
     <br>
     <p v-if="!checkbox">Select start time.</p>
@@ -15,20 +30,18 @@
     <date-picker v-if="!checkbox" v-model="datetime" lang="en" confirm type="datetime"  format="YYYY-MM-DD HH:mm:ss" width="500" placeholder="Select Date and Time"></date-picker>
     <date-picker v-if="checkbox" v-model="range" lang="en" range confirm type="datetime" format="YYYY-MM-DD HH:mm:ss" width="500" placeholder="Select Date and Time"></date-picker>
     <p>Enter event name here.</p>
-    <input v-model="eventName"/>
+    <input v-model="eventName" v-on:keyup.enter="submitNewEvent"/>
     <p>Enter event details here.</p>
-    <textarea v-model="eventDetails"/>
+    <textarea v-model="eventDetails" v-on:keyup.enter="submitNewEvent"/>
     <br>
-    <p id="failedEntry" v-if="failedEntry">You must be logged in, set a time, enter an event name, and enter a description.</p>
+    <p id="failedEntry" v-if="failedEntry == true">You must be logged in, set a time, enter an event name, and enter a description.</p>
     <button @click="submitNewEvent">Submit</button>
-
     <hr>
 
+    <!-- list all events for current user -->
     <h2>My events</h2>
     <button @click="getEvents">Update my events</button>
-    
     <br>
-
     <div id=eventList>
       <ul v-for="(event, index) in zippedEvent" :key="index">
         <li> {{ event[0] }} </li>
@@ -67,8 +80,13 @@ export default {
       eventResponseID: [],
       zippedEvent: [],
       sharedUsers: [],
+      chosenTimezoneNumber: null,
+      chosenTimezoneName: "",
+      chosenTimezoneString: "",
+      timeCheckbox: false,
       checkbox: false,
       datetime: '',
+      zones: [],
       timezone: [],
       timezoneStart: 0,
       timezoneEnd: 0,
@@ -84,6 +102,9 @@ export default {
   methods: {
     submitNewEvent() {
       this.clearEventList()
+      this.failedEntry = false
+
+      // Selects start and end times depending on if range is selected or not.
       this.setStartTime()
 
       // Sets start time to UTC
@@ -113,6 +134,9 @@ export default {
         this.getEvents()
     },
     deleteEvent(id) {
+      // There is currently an issue with the delete button failing to remove list items sometimes.
+      // Refreshing the page restores proper functionality.
+      // Update: perhaps it's related to a potential race condition, where the updated list isn't properly rendered in time.
       axios.delete('/deleteevent', {data: { event_id: id } })
       .then(() => {
         this.getEvents()
@@ -147,13 +171,15 @@ export default {
       })
     },
     submitNewUsername() {
-      // I believe there is a race condition in here that sometimes prevents the list of events from updating on the webpage.
+      // I believe there is a race condition somewhere that sometimes prevents the list of events from updating on the webpage.
+      // I included an "Update events" button to manually fix the problem.
       axios.post('/usersignup', { new_user: this.inputUserName })
       .then(() => {
         this.currentUser = this.inputUserName
         this.inputUserName = ""
         this.getCurrentUserID()
         this.getEvents()
+      // Maybe this part was unnecissary. I was tinkering for a long time. If it aint broke...
       }, () => {
         this.currentUser = this.inputUserName
         this.inputUserName = ''
@@ -195,11 +221,60 @@ export default {
         this.eventResponseStartTime = []
         this.eventResponseEndTime = []
       })
+    },
+
+    // API calls in the next two methods.
+    updateZones() {
+      axios.get("http://worldtimeapi.org/api/timezone")
+      .then((response) => {
+        this.zones = response.data
+        console.log(this.zones)
+      })
+    },
+    selectTimezone() {
+      this.chosenTimezoneName = this.zones[this.chosenTimezoneNumber]
+      axios.get(`http://worldtimeapi.org/api/timezone/${this.chosenTimezoneName}`)
+      .then((response) => {
+        this.chosenTimezoneString = moment(response.data.datetime).toString()
+      })
     }
   }
 }
 </script>
 
 <style>
+  #failedEntry {
+    color: red;
+  }
+  #app{
+    background-image: url("assets/photo-1455612693675-112974d4880b.jpeg");
+    background-size: 200px;
+  }
+  textarea {
+    border: 2px solid black;
+    background-color: lightgray;    
+  }
+  input {
+    border: 2px solid black;
+    background-color: lightgray;
+  }
 
+  /* this one actually works on the datetime picker */
+  input[type=text] {
+    border: 2px solid black;
+    background-color: lightgray;
+    font-weight: bold;
+  }
+  .check {
+    border: 2px solid black;
+  }
+  label {
+    font-weight: bold;
+  }
+  p {
+    font-weight: bold;
+  }
+  button {
+    font-weight: bold;
+  }
 </style>
