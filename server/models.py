@@ -14,3 +14,9 @@ class Event(db.Model):
     end_time = db.Column(db.DateTime)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     # shared_ids = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+class Invites(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    invitee_email = db.Column(db.String(500))
+    accepted = db.Column(db.Boolean, default=False)
+    event_id = db.Column(db.Integer, db.ForeignKey("event.id"))
