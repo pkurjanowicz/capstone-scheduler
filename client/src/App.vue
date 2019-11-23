@@ -1,12 +1,8 @@
 <template>
   <div id="app">
     <!-- Crude login -->
-    <input v-if="this.currentUser == '' " v-model="inputUserName" v-on:keyup.enter="submitNewUsername"/>
-    <button v-if="this.currentUser == '' " @click="submitNewUsername">Enter a username</button>
-    <p v-if="this.currentUser != '' ">Welcome {{ currentUser }}!</p>
-    <button v-if="this.currentUser != '' " @click="switchUser">Change user</button>
-    <hr>
-
+    <facebookLogin v-if="this.currentUser == '' "/>
+    
     <!-- Make API call to find time at specific location -->
     <input type="checkbox" class="check" id="timeCheckbox" v-model="timeCheckbox">
     <label for="timeCheckbox">Check this box to find the current time for a specific location</label>
@@ -59,6 +55,7 @@
 <script>
 import DatePicker from 'vue2-datepicker'
 import axios from 'axios'
+import facebookLogin from './components/facebookLogin.vue'
 
 let moment = require('moment')
 
@@ -97,7 +94,8 @@ export default {
     }        
   },
   components: {
-    DatePicker
+    DatePicker,
+    facebookLogin
   },
   methods: {
     submitNewEvent() {
