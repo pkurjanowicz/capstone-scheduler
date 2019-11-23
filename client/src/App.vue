@@ -1,8 +1,9 @@
 <template>
   <div id="app">
     <!-- Crude login -->
-    <facebookLogin v-if="this.currentUser == '' "/>
-    
+    <p>App.vue line 4</p>
+    <facebookLogin v-if="this.currentUser == '' " />
+    <p>App.vue line 6</p>
     <!-- Make API call to find time at specific location -->
     <input type="checkbox" class="check" id="timeCheckbox" v-model="timeCheckbox">
     <label for="timeCheckbox">Check this box to find the current time for a specific location</label>

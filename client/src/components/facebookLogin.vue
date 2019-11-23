@@ -12,7 +12,7 @@
 
 </template>
 <script>
-import Vue from 'vue'
+
 import facebookLogin from 'facebook-login-vuejs';
 
 export default {
@@ -33,6 +33,8 @@ methods: {
     getUserData() {
       this.FB.api('/me', 'GET', { fields: 'id,name,email' },
         userInformation => {
+          // eslint-disable-next-line no-console
+          console.log("fblogin line 37");
           this.personalID = userInformation.id;
           this.email = userInformation.email;
           this.name = userInformation.name;
@@ -40,6 +42,8 @@ methods: {
       )
     },
     sdkLoaded(payload) {
+      // eslint-disable-next-line no-console
+      console.log("fblogin line 45");
       this.isConnected = payload.isConnected
       this.FB = payload.FB
       if (this.isConnected) this.getUserData()
@@ -47,6 +51,8 @@ methods: {
 
     onLogin() {
       this.isConnected = true
+       // eslint-disable-next-line no-console
+      console.log("fblogin line 55");
       this.getUserData()
     },
      onLogout() {
