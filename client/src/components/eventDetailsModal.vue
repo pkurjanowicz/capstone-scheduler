@@ -7,7 +7,7 @@
             <section class="modal-body">
                 <slot name="body">
                     <div>
-                        {{ title }}
+                        {{ title }}<br><br>
                         {{ details }}
                     </div>
                 </slot>
@@ -30,22 +30,21 @@ export default {
 
 <style scoped>
 .modal-backdrop {
-    position: absolute;
+    position: static;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .modal {
     background: #FFFFFF;
-    box-shadow: 2px 2px 20px 1px;
-    overflow-x: auto;
     display: flex;
     flex-direction: column;
+    border: 3px solid blue;
+    padding: 3%;
     height: 200px;
-    width: 200px;
+    width: 80%;
 }
 
 .modal-header {

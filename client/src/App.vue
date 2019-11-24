@@ -43,6 +43,14 @@
     <button @click="getEvents">Update my events</button>
     <br>
     <div>
+      <eventDetailsModal
+        v-if="isModalVisible" 
+        @close="closeModal()"
+        :title='eventClickTitle'
+        :details='eventClickDescription'
+      />
+    </div>
+    <div>
       <calendarView
       :calendarEvents='zippedEvent'
       @eventClick='eventClick'
