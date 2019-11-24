@@ -42,13 +42,12 @@ export default {
     display: flex;
     flex-direction: column;
     border: 3px solid blue;
-    padding: 3%;
-    height: 200px;
-    width: 80%;
+    padding: 1%;
+    height: 100px;
+    width: 50%;
 }
 
 .modal-header {
-    padding: 20px 20px 0 20px;
     display: flex;
 }
 
