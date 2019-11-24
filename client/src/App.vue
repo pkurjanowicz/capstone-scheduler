@@ -42,9 +42,12 @@
     <h2>My events</h2>
     <button @click="getEvents">Update my events</button>
     <br>
-    <calendarView
-    :calendarEvents='zippedEvent'
-    />
+    <div>
+      <calendarView
+      :calendarEvents='zippedEvent'
+      @eventClick='eventClick'
+      />
+    </div>
   </div>
 </template>
 
@@ -52,6 +55,7 @@
 import DatePicker from 'vue2-datepicker'
 import axios from 'axios'
 import calendarView from '/Users/peterkurjanowicz/Desktop/Interesting Projects/bronsons_project/capstone-scheduler/client/src/components/calendarView.vue'
+import eventDetailsModal from '/Users/peterkurjanowicz/Desktop/Interesting Projects/bronsons_project/capstone-scheduler/client/src/components/eventDetailsModal.vue'
 
 let moment = require('moment')
 
@@ -59,6 +63,9 @@ export default {
   name: 'app',
   data() {
     return {
+      eventClickTitle: '',
+      eventClickDescription: '',
+      isModalVisible: false,
       moment: moment,
       inputUserName: '',
       currentUser: '',
@@ -91,9 +98,21 @@ export default {
   },
   components: {
     DatePicker,
-    calendarView
+    calendarView,
+    eventDetailsModal
   },
   methods: {
+    //Data is passed from the calendarView component to the parent(App.vue)
+    //Then this data is passed to the eventDetailsModal component for use there
+    eventClick(title, description) {
+      this.eventClickTitle = title
+      this.eventClickDescription = description
+      this.isModalVisible = true
+      console.log('click handled')
+    },
+    closeModal() {
+      this.isModalVisible = false;
+    },
     submitNewEvent() {
       this.clearEventList()
       this.failedEntry = false
@@ -209,8 +228,11 @@ export default {
             title: this.eventResponseNames[i].event_name, 
             start: stringConvertStartTime, 
             end: stringConvertEndTime, 
+            extendedProps: {
+              title: this.eventResponseNames[i].event_name,
+              description: this.eventResponseDetails[i].details,
+            },
             })
-            // details: this.eventResponseDetails[i].details, ** PK
             // id: this.eventResponseID[i].id ** PK
             //Maybe I will use these later? ** PK
         }
