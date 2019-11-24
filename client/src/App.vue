@@ -39,9 +39,16 @@
     <hr>
 
     <!-- list all events for current user -->
-    <h2>My events</h2>
+    <!-- <h2>My events</h2>
     <button @click="getEvents">Update my events</button>
-    <br>
+    <br> -->
+  <div class="calendar_eventdetails"> 
+    <div>
+      <calendarView
+      :calendarEvents='zippedEvent'
+      @eventClick='eventClick'
+      />
+    </div>
     <div>
       <eventDetailsModal
         v-if="isModalVisible" 
@@ -50,12 +57,7 @@
         :details='eventClickDescription'
       />
     </div>
-    <div>
-      <calendarView
-      :calendarEvents='zippedEvent'
-      @eventClick='eventClick'
-      />
-    </div>
+  </div>
   </div>
 </template>
 
@@ -307,5 +309,9 @@ export default {
   }
   li {
     font-weight: bold;
+  }
+  .calendar_eventdetails {
+    display: flex;
+    flex-direction: row;
   }
 </style>
