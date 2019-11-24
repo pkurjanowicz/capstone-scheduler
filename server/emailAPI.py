@@ -7,7 +7,7 @@ from email.mime.text import MIMEText
 
 email_api = Blueprint('email_api', __name__)
 gmail_user = 'pkurjanowicz10@gmail.com'
-gmail_password = 'Popcorn97'
+gmail_password = 'AtYoqLFPDQpTfrpWKT.zLP*4FU'
 
 @email_api.route('/sendinvites', methods=['POST'])
 def sendinvites():
@@ -53,29 +53,6 @@ def sendinvites():
             server.sendmail(gmail_user,email,msg.as_string())
             server.close()
             print('Success!')
-
-            # sent_from = gmail_user
-            # to = email
-            # subject = 'Please accept this invite to my event!'
-            # body = "Hey, what's up?\n please accept invite to my event!\n\n- Pete"
-
-            # email_text = """\
-            # From: %s
-            # To: %s
-            # Subject: %s
-
-            # %s
-            # """ % (sent_from, ", ".join(to), subject, body)
-
-            # try:
-            #     server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-            #     server.ehlo()
-            #     server.login(gmail_user, gmail_password)
-            #     server.sendmail(sent_from, to, email_text)
-            #     server.close()
-            #     print('Success!')
-            # except:
-            #     print('Something went wrong...')
         return jsonify(success=True)
 
 
