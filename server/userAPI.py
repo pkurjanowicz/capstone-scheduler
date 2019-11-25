@@ -41,7 +41,7 @@ def add_event():
     if new_event.owner_id != "" and new_event.event_name != "" and new_event.start_time != "":
         db.session.add(new_event)
         db.session.commit()
-    return jsonify(success=True)
+    return jsonify(success=True, event_id=new_event.id)
 
 @user_api.route('/deleteevent', methods=['DELETE'])
 def delete_event():
