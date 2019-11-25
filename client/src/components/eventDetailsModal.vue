@@ -41,6 +41,7 @@ export default {
     border: 3px solid blue;
     padding: 10%;
     height: 100%;
+    width: 200px;
 }
 
 .modal-header {
