@@ -34,9 +34,29 @@
     <p>Enter event details here.</p>
     <textarea v-model="eventDetails" v-on:keyup.enter="submitNewEvent"/>
     <br>
+    <input-tags v-model="emails">
+      <div class="emails-input"
+        slot-scope="{tag,removeTag,inputEventHandlers,inputBindings }">
+        <span v-for="(email, index) in emails"
+          :key='index'
+          class="tags-input-email">
+          <span>{{ email }}</span>
+          <button type="button" class="tags-input-remove"
+            v-on:click="removeTag(email)"
+          >&times;
+          </button>
+        </span>
+        <input
+          class="email-input-text"  placeholder="Add invitee email..."
+          v-on="inputEventHandlers"
+          v-bind="inputBindings"
+        >
+      </div>
+    </input-tags>
     <p id="failedEntry" v-if="failedEntry == true">You must be logged in, set a time, enter an event name, and enter a description.</p>
     <button @click="submitNewEvent">Submit</button>
     <hr>
+    {{emails}}
 
     <!-- list all events for current user -->
     <h2>My events</h2>
@@ -52,6 +72,7 @@
 import DatePicker from 'vue2-datepicker'
 import axios from 'axios'
 import calendarView from '/Users/peterkurjanowicz/Desktop/Interesting Projects/bronsons_project/capstone-scheduler/client/src/components/calendarView.vue'
+import VueTags from "vue-tags";
 
 let moment = require('moment')
 
@@ -59,6 +80,8 @@ export default {
   name: 'app',
   data() {
     return {
+      currentEventId: '',
+      emails: [],
       moment: moment,
       inputUserName: '',
       currentUser: '',
@@ -91,9 +114,18 @@ export default {
   },
   components: {
     DatePicker,
-    calendarView
+    calendarView,
+    VueTags
   },
   methods: {
+    sendInviteEmails(){
+      axios.post('/sendinvites', {
+        emails: this.emails,
+        event_id: this.currentEventId
+      }).then(() => {
+        this.currentEventId = []
+      })
+    },
     submitNewEvent() {
       this.clearEventList()
       this.failedEntry = false
@@ -117,13 +149,15 @@ export default {
       }
 
       axios.post('/newevent', { owner_id: this.currentUserID, event_name: this.eventName, event_details: this.eventDetails, event_start_time: this.startTime, event_end_time: this.endTime})
-      .then(() => {
+      .then((response) => {
         this.eventName = ''
         this.eventDetails = ''
         this.startTime = ''
         this.range = ''
         this.endTime = ''
         this.getEvents()
+        this.currentEventId = response.data.event_id
+        this.sendInviteEmails()
       })
     },
     deleteEvent(id) {

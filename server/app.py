@@ -1,6 +1,7 @@
 import os
 from flask import Flask, render_template
 from userAPI import user_api, User, Event
+from emailAPI import email_api
 from db_instance import db
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
@@ -18,6 +19,7 @@ def create_app():
     app.config['SQLALCHEMY_ECHO'] = True
     db.init_app(app)
     app.register_blueprint(user_api)
+    app.register_blueprint(email_api)
 
     return app
 
