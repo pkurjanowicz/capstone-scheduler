@@ -1,13 +1,17 @@
 <template>
-    <div id="app">
-        <h1>testfblogin page</h1>
-        <facebookLogin class="button"
-            appId="2344508732526791"
-            @login="onLogin"
-            @logout="onLogout"
-            @get-initial-status="getUserData">
-        </facebookLogin>
+    <div>
+    <p>fbLogin line 3</p>
 
+    <facebook-login class="button"
+      
+      appId="2344508732526791"
+      @login="onLogin"
+      @logout="onLogout"
+      @sdk-loaded="sdkLoaded">
+    </facebook-login>
+    
+    
+  
     </div>
 
 </template>
@@ -16,10 +20,12 @@
 import facebookLogin from 'facebook-login-vuejs';
 
 export default {
-    name: "facebookLogin",
+    name: "facebookLoginbutton",
+    components: { facebookLogin },
 
     data() {
         return {
+            idImage, loginImage, mailImage, faceImage,
             isConnected: false,
             name: '',
             email: '',
