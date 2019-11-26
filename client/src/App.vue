@@ -55,12 +55,25 @@
     {{emails}}
 
     <!-- list all events for current user -->
-    <h2>My events</h2>
+    <!-- <h2>My events</h2>
     <button @click="getEvents">Update my events</button>
-    <br>
-    <calendarView
-    :calendarEvents='zippedEvent'
-    />
+    <br> -->
+  <div class="calendar_eventdetails"> 
+    <div>
+      <calendarView
+      :calendarEvents='zippedEvent'
+      @eventClick='eventClick'
+      />
+    </div>
+    <div>
+      <eventDetailsModal
+        v-if="isModalVisible" 
+        @close="closeModal()"
+        :title='eventClickTitle'
+        :details='eventClickDescription'
+      />
+    </div>
+  </div>
   </div>
 </template>
 
@@ -68,7 +81,8 @@
 import DatePicker from 'vue2-datepicker'
 import axios from 'axios'
 import facebookLoginbutton from './components/facebookLogin.vue'
-import calendarView from '/Users/peterkurjanowicz/Desktop/Interesting Projects/bronsons_project/capstone-scheduler/client/src/components/calendarView.vue'
+import calendarView from './components/calendarView.vue'
+import eventDetailsModal from './components/eventDetailsModal.vue'
 import VueTags from "vue-tags";
 
 let moment = require('moment')
@@ -113,6 +127,19 @@ export default {
     DatePicker,
     facebookLoginbutton,
     calendarView,
+    eventDetailsModal
+  },
+  methods: {
+    //Data is passed from the calendarView component to the parent(App.vue)
+    //Then this data is passed to the eventDetailsModal component for use there
+    eventClick(title, description) {
+      this.eventClickTitle = title
+      this.eventClickDescription = description
+      this.isModalVisible = true
+      console.log('click handled')
+    },
+    closeModal() {
+      this.isModalVisible = false;
     VueTags
   },
   methods: {
@@ -241,8 +268,11 @@ export default {
             title: this.eventResponseNames[i].event_name, 
             start: stringConvertStartTime, 
             end: stringConvertEndTime, 
+            extendedProps: {
+              title: this.eventResponseNames[i].event_name,
+              description: this.eventResponseDetails[i].details,
+            },
             })
-            // details: this.eventResponseDetails[i].details, ** PK
             // id: this.eventResponseID[i].id ** PK
             //Maybe I will use these later? ** PK
         }
@@ -269,6 +299,7 @@ export default {
       })
     }
   }
+}
 }
 </script>
 
@@ -309,5 +340,9 @@ export default {
   }
   li {
     font-weight: bold;
+  }
+  .calendar_eventdetails {
+    display: flex;
+    flex-direction: row;
   }
 </style>

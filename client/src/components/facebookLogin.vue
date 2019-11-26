@@ -1,9 +1,10 @@
 <template>
     <div>
 
+
     <facebook-login class="button"
       
-      appId="430359124531296"
+      appId="2344508732526791"
       @login="onLogin"
       @logout="onLogout"
       @sdk-loaded="sdkLoaded">

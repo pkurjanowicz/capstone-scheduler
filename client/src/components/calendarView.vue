@@ -17,10 +17,16 @@
         center: 'title',
         right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
       }"
+      :views="{
+        dayGridMonth: {
+          details:'here are the event details'
+        }
+      }"
       :plugins="calendarPlugins"
       :weekends="calendarWeekends"
       :events="calendarEvents"
       @dateClick="handleDateClick"
+      @eventClick="handleEventClick"
       />
   </div>
 </template>
@@ -37,7 +43,7 @@ export default {
   components: {
     FullCalendar // make the <FullCalendar> tag available ** PK
   },
-  data: function() {
+  data() {
     return {
       calendarPlugins: [ // plugins must be defined in the JS ** PK
         dayGridPlugin,
@@ -45,6 +51,8 @@ export default {
         interactionPlugin // needed for dateClick ** PK
       ],
       calendarWeekends: true,
+      eventClickTitle: '',
+      eventClickDetails: '',
     }
   },
   methods: {
@@ -59,7 +67,16 @@ export default {
           console.log('this is the date:'+ arg.date)
           /* TODO This is for you Kristin to put in the modal view show function, 
           I have provided you the arg.date here so you can auto populate that ** PK */
-        }
+        },
+    handleEventClick(arg) {
+      this.eventClickTitle = arg.event.extendedProps.title
+      this.eventClickDetails = arg.event.extendedProps.description
+      this.$emit('eventClick', this.eventClickTitle, this.eventClickDetails) 
+    },
+    eventRender(info) {
+    console.log(info.event.extendedProps);
+    // {description: "Lecture", department: "BioChemistry"}
+  }
   }
 }
 
