@@ -81,13 +81,10 @@
 <script>
 import DatePicker from 'vue2-datepicker'
 import axios from 'axios'
-<<<<<<< HEAD
 import facebookLoginbutton from './components/facebookLogin.vue'
-=======
-import calendarView from '/Users/peterkurjanowicz/Desktop/Interesting Projects/bronsons_project/capstone-scheduler/client/src/components/calendarView.vue'
-import eventDetailsModal from '/Users/peterkurjanowicz/Desktop/Interesting Projects/bronsons_project/capstone-scheduler/client/src/components/eventDetailsModal.vue'
+import calendarView from './components/calendarView.vue'
+import eventDetailsModal from './components/eventDetailsModal.vue'
 import VueTags from "vue-tags";
->>>>>>> dev
 
 let moment = require('moment')
 
@@ -129,9 +126,7 @@ export default {
   },
   components: {
     DatePicker,
-<<<<<<< HEAD
     facebookLoginbutton,
-=======
     calendarView,
     eventDetailsModal
   },
@@ -147,7 +142,6 @@ export default {
     closeModal() {
       this.isModalVisible = false;
     VueTags
->>>>>>> dev
   },
   methods: {
     sendInviteEmails(){
@@ -306,6 +300,7 @@ export default {
       })
     }
   }
+}
 }
 </script>
 
