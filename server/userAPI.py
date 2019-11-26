@@ -5,6 +5,7 @@ from datetime import datetime
 import requests_oauthlib
 from requests_oauthlib.compliance_fixes import facebook_compliance_fix
 import os
+import flask
 
 user_api = Blueprint('user_api', __name__)
 
@@ -77,7 +78,7 @@ def login():
     )
     authorization_url, _ = facebook.authorization_url(FB_AUTHORIZATION_BASE_URL)
 
-    return redirect(authorization_url)
+    return flask.redirect(authorization_url)
 
 
 @user_api.route("/fb-callback")
