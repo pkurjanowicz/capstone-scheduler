@@ -14,7 +14,9 @@ def serve_all_users():
 @user_api.route('/getevents', methods=['GET'])
 def serve_all_events():
     event_instances = db.session.query(Event).all()
-    user_events = [{"id":event.id, "event_name": event.event_name, "details": event.details, "start_time": event.start_time.strftime("%m-%d-%Y %H:%M:%S"), "end_time":event.end_time.strftime("%m-%d-%Y %H:%M:%S"), "owner_id":event.owner_id} for event in event_instances]
+    # do not change the %Y-%m-%d %H:%M:%S format of these times in the line
+    #  below because this is being used in that format on the calendar ** PK
+    user_events = [{"id":event.id, "event_name": event.event_name, "details": event.details, "start_time": event.start_time.strftime("%Y-%m-%d %H:%M:%S"), "end_time":event.end_time.strftime("%Y-%m-%d %H:%M:%S"), "owner_id":event.owner_id} for event in event_instances]
     return jsonify({"all_events": user_events})
 
 @user_api.route('/usersignup', methods=['POST'])
@@ -39,7 +41,7 @@ def add_event():
     if new_event.owner_id != "" and new_event.event_name != "" and new_event.start_time != "":
         db.session.add(new_event)
         db.session.commit()
-    return jsonify(success=True)
+    return jsonify(success=True, event_id=new_event.id)
 
 @user_api.route('/deleteevent', methods=['DELETE'])
 def delete_event():

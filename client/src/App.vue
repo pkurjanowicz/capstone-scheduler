@@ -1,12 +1,9 @@
 <template>
   <div id="app">
     <!-- Crude login -->
-    <input v-if="this.currentUser == '' " v-model="inputUserName" v-on:keyup.enter="submitNewUsername"/>
-    <button v-if="this.currentUser == '' " @click="submitNewUsername">Enter a username</button>
-    <p v-if="this.currentUser != '' ">Welcome {{ currentUser }}!</p>
-    <button v-if="this.currentUser != '' " @click="switchUser">Change user</button>
-    <hr>
-
+    <p>App.vue line 4</p>
+    <facebookLoginbutton v-if="this.currentUser == '' " />
+    
     <!-- Make API call to find time at specific location -->
     <input type="checkbox" class="check" id="timeCheckbox" v-model="timeCheckbox">
     <label for="timeCheckbox">Check this box to find the current time for a specific location</label>
@@ -14,7 +11,7 @@
     <div v-if="this.timeCheckbox == true">
       <button @click="updateZones" v-on:keyup.enter="updateZones">Update timezones</button>
       <select v-model="chosenTimezoneNumber" @click="selectTimezone">
-        <option v-for="(zone, key) in zones" :value="key">
+        <option v-for="(zone, key) in zones" :key="key">
           {{ zone }}
         </option>
       </select>
@@ -34,31 +31,63 @@
     <p>Enter event details here.</p>
     <textarea v-model="eventDetails" v-on:keyup.enter="submitNewEvent"/>
     <br>
+    <input-tags v-model="emails">
+      <div class="emails-input"
+        slot-scope="{tag,removeTag,inputEventHandlers,inputBindings }">
+        <span v-for="(email, index) in emails"
+          :key='index'
+          class="tags-input-email">
+          <span>{{ email }}</span>
+          <button type="button" class="tags-input-remove"
+            v-on:click="removeTag(email)"
+          >&times;
+          </button>
+        </span>
+        <input
+          class="email-input-text"  placeholder="Add invitee email..."
+          v-on="inputEventHandlers"
+          v-bind="inputBindings"
+        >
+      </div>
+    </input-tags>
     <p id="failedEntry" v-if="failedEntry == true">You must be logged in, set a time, enter an event name, and enter a description.</p>
     <button @click="submitNewEvent">Submit</button>
     <hr>
+    {{emails}}
 
     <!-- list all events for current user -->
-    <h2>My events</h2>
+    <!-- <h2>My events</h2>
     <button @click="getEvents">Update my events</button>
-    <br>
-    <div id=eventList>
-      <ul v-for="(event, index) in zippedEvent" :key="index">
-        <li> {{ event[0] }} </li>
-        <li> {{ event[1] }} </li>
-        <li> {{ event[2] }} </li>
-        <li> {{ event[3] }} </li>
-        <button @click="deleteEvent(event[4])">Delete event</button>
-        <p>---------------------------------</p>
-      </ul>
+    <br> -->
+  <div class="calendar_eventdetails"> 
+    <div>
+      <calendarView
+      :calendarEvents='zippedEvent'
+      @eventClick='eventClick'
+      />
     </div>
-    
+    <div>
+      <eventDetailsModal
+        v-if="isModalVisible" 
+        @close="closeModal()"
+        :title='eventClickTitle'
+        :details='eventClickDescription'
+      />
+    </div>
+  </div>
   </div>
 </template>
 
 <script>
 import DatePicker from 'vue2-datepicker'
 import axios from 'axios'
+<<<<<<< HEAD
+import facebookLoginbutton from './components/facebookLogin.vue'
+=======
+import calendarView from '/Users/peterkurjanowicz/Desktop/Interesting Projects/bronsons_project/capstone-scheduler/client/src/components/calendarView.vue'
+import eventDetailsModal from '/Users/peterkurjanowicz/Desktop/Interesting Projects/bronsons_project/capstone-scheduler/client/src/components/eventDetailsModal.vue'
+import VueTags from "vue-tags";
+>>>>>>> dev
 
 let moment = require('moment')
 
@@ -66,6 +95,8 @@ export default {
   name: 'app',
   data() {
     return {
+      currentEventId: '',
+      emails: [],
       moment: moment,
       inputUserName: '',
       currentUser: '',
@@ -97,9 +128,36 @@ export default {
     }        
   },
   components: {
-    DatePicker
+    DatePicker,
+<<<<<<< HEAD
+    facebookLoginbutton,
+=======
+    calendarView,
+    eventDetailsModal
   },
   methods: {
+    //Data is passed from the calendarView component to the parent(App.vue)
+    //Then this data is passed to the eventDetailsModal component for use there
+    eventClick(title, description) {
+      this.eventClickTitle = title
+      this.eventClickDescription = description
+      this.isModalVisible = true
+      console.log('click handled')
+    },
+    closeModal() {
+      this.isModalVisible = false;
+    VueTags
+>>>>>>> dev
+  },
+  methods: {
+    sendInviteEmails(){
+      axios.post('/sendinvites', {
+        emails: this.emails,
+        event_id: this.currentEventId
+      }).then(() => {
+        this.currentEventId = []
+      })
+    },
     submitNewEvent() {
       this.clearEventList()
       this.failedEntry = false
@@ -123,15 +181,16 @@ export default {
       }
 
       axios.post('/newevent', { owner_id: this.currentUserID, event_name: this.eventName, event_details: this.eventDetails, event_start_time: this.startTime, event_end_time: this.endTime})
-      .then(() => {
-        
-      })
+      .then((response) => {
         this.eventName = ''
         this.eventDetails = ''
         this.startTime = ''
         this.range = ''
         this.endTime = ''
         this.getEvents()
+        this.currentEventId = response.data.event_id
+        this.sendInviteEmails()
+      })
     },
     deleteEvent(id) {
       // There is currently an issue with the delete button failing to remove list items sometimes.
@@ -154,10 +213,6 @@ export default {
     },
     clearEventList() {
       this.zippedEvent = []
-      const listID = document.getElementById("eventList")
-      if (listID.firstChild) {
-        while (listID.firstChild) listID.removeChild(listID.firstChild)
-      }
     },
     getCurrentUserID() {
       axios.get('/user')
@@ -201,20 +256,32 @@ export default {
       axios.get('/getevents')
       .then((response) => {
         let currentResponse = response.data.all_events
+        console.log(currentResponse)
         for (let i = 0; i < currentResponse.length; i++) {
           if (this.currentUserID === currentResponse[i].owner_id) {
 
-            this.eventResponseNames.push(currentResponse[i].event_name)
-            this.eventResponseDetails.push(currentResponse[i].details)
-            this.eventResponseStartTime.push(currentResponse[i].start_time)
-            this.eventResponseEndTime.push(currentResponse[i].end_time)
-            this.eventResponseID.push(currentResponse[i].id)
+            this.eventResponseNames.push(currentResponse[i])
+            this.eventResponseDetails.push(currentResponse[i])
+            this.eventResponseStartTime.push(currentResponse[i])
+            this.eventResponseEndTime.push(currentResponse[i])
+            this.eventResponseID.push(currentResponse[i])
           }
         }
         for (let i = 0; i < this.eventResponseNames.length; i++) {
-          let stringConvertStartTime = this.eventResponseStartTime[i].toString()
-          let stringConvertEndTime = this.eventResponseEndTime[i].toString()
-          this.zippedEvent.push([stringConvertStartTime, stringConvertEndTime, this.eventResponseNames[i], this.eventResponseDetails[i], this.eventResponseID[i]])
+          let stringConvertStartTime = this.eventResponseStartTime[i].start_time.toString()
+          let stringConvertEndTime = this.eventResponseEndTime[i].end_time.toString()
+          //the zipped event must be in this format in order for calendarview to display it(as an object) **PK
+          this.zippedEvent.push({
+            title: this.eventResponseNames[i].event_name, 
+            start: stringConvertStartTime, 
+            end: stringConvertEndTime, 
+            extendedProps: {
+              title: this.eventResponseNames[i].event_name,
+              description: this.eventResponseDetails[i].details,
+            },
+            })
+            // id: this.eventResponseID[i].id ** PK
+            //Maybe I will use these later? ** PK
         }
         this.eventResponseNames = []
         this.eventResponseDetails = []
@@ -247,7 +314,7 @@ export default {
     color: red;
   }
   #app{
-    background-image: url("assets/photo-1455612693675-112974d4880b.jpeg");
+    /* background-image: url("assets/photo-1455612693675-112974d4880b.jpeg"); */
     background-size: 200px;
   }
   textarea {
@@ -279,5 +346,9 @@ export default {
   }
   li {
     font-weight: bold;
+  }
+  .calendar_eventdetails {
+    display: flex;
+    flex-direction: row;
   }
 </style>
