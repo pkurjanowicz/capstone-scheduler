@@ -40,7 +40,7 @@ methods: {
       this.FB.api('/me', 'GET', { fields: 'id,name,email' },
         userInformation => {
           // eslint-disable-next-line no-console
-          console.log("fblogin line 37");
+          console.log("fblogin line getUserData");
           this.personalID = userInformation.id;
           this.email = userInformation.email;
           this.name = userInformation.name;
@@ -49,17 +49,21 @@ methods: {
     },
     sdkLoaded(payload) {
       // eslint-disable-next-line no-console
-      console.log("fblogin line 45");
+      console.log("fblogin line sdkLoaded");
       this.isConnected = payload.isConnected
       this.FB = payload.FB
       if (this.isConnected) this.getUserData()
     },
 
     onLogin() {
-      this.isConnected = true
-       // eslint-disable-next-line no-console
-      console.log("fblogin line 55");
-      this.getUserData()
+
+      if (location.protocol != 'https:') {
+        location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+        this.isConnected = true
+        // eslint-disable-next-line no-console
+        console.log("fblogin line onLogin");
+        this.getUserData()
+      }
     },
      onLogout() {
       this.isConnected = false;

@@ -68,12 +68,9 @@
 <script>
 import DatePicker from 'vue2-datepicker'
 import axios from 'axios'
-<<<<<<< HEAD
 import facebookLoginbutton from './components/facebookLogin.vue'
-=======
 import calendarView from '/Users/peterkurjanowicz/Desktop/Interesting Projects/bronsons_project/capstone-scheduler/client/src/components/calendarView.vue'
 import VueTags from "vue-tags";
->>>>>>> dev
 
 let moment = require('moment')
 
@@ -115,12 +112,9 @@ export default {
   },
   components: {
     DatePicker,
-<<<<<<< HEAD
     facebookLoginbutton,
-=======
     calendarView,
     VueTags
->>>>>>> dev
   },
   methods: {
     sendInviteEmails(){
