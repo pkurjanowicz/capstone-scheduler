@@ -9,14 +9,15 @@ import flask
 
 user_api = Blueprint('user_api', __name__)
 
+URL = "http://ce255328.ngrok.io"
 
 FB_CLIENT_ID = os.environ.get("FB_CLIENT_ID")
 FB_CLIENT_SECRET = os.environ.get("FB_CLIENT_SECRET")
 FB_AUTHORIZATION_BASE_URL = "https://www.facebook.com/dialog/oauth"
 FB_TOKEN_URL = "https://graph.facebook.com/oauth/access_token"
-USERINFO_URL = "https://app.simplelogin.io/oauth2/userinfo"
+
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
-URL = "http://ce255328.ngrok.io"
+
 
 @user_api.route('/user', methods=['GET'])
 def serve_all_users():
@@ -77,7 +78,7 @@ def login():
         FB_CLIENT_ID, redirect_uri=URL + "/fb-callback", scope=FB_SCOPE
     )
     authorization_url, _ = facebook.authorization_url(FB_AUTHORIZATION_BASE_URL)
-
+    print(authorization_url)
     return flask.redirect(authorization_url)
 
 
