@@ -1,9 +1,21 @@
-from flask import Blueprint, jsonify, request
+from flask import Flask, Blueprint, jsonify, request, redirect
 from db_instance import db
 from models import User, Event
 from datetime import datetime
+import requests_oauthlib
+from requests_oauthlib.compliance_fixes import facebook_compliance_fix
+import os
 
 user_api = Blueprint('user_api', __name__)
+
+
+FB_CLIENT_ID = os.environ.get("FB_CLIENT_ID")
+FB_CLIENT_SECRET = os.environ.get("FB_CLIENT_SECRET")
+FB_AUTHORIZATION_BASE_URL = "https://www.facebook.com/dialog/oauth"
+FB_TOKEN_URL = "https://graph.facebook.com/oauth/access_token"
+USERINFO_URL = "https://app.simplelogin.io/oauth2/userinfo"
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+URL = "http://ce255328.ngrok.io"
 
 @user_api.route('/user', methods=['GET'])
 def serve_all_users():
@@ -50,3 +62,53 @@ def delete_event():
     db.session.delete(to_delete)
     db.session.commit()
     return jsonify(success=True)
+
+@user_api.route("/")
+def index():
+    return """
+    <a href="/fb-login">Login with Facebook</a>
+    """
+FB_SCOPE = ["email"]
+
+@user_api.route("/fb-login")
+def login():
+    facebook = requests_oauthlib.OAuth2Session(
+        FB_CLIENT_ID, redirect_uri=URL + "/fb-callback", scope=FB_SCOPE
+    )
+    authorization_url, _ = facebook.authorization_url(FB_AUTHORIZATION_BASE_URL)
+
+    return redirect(authorization_url)
+
+
+@user_api.route("/fb-callback")
+def callback():
+    facebook = requests_oauthlib.OAuth2Session(
+        FB_CLIENT_ID, scope=FB_SCOPE, redirect_uri=URL + "/fb-callback"
+    )
+
+    # we need to apply a fix for Facebook here
+    facebook = facebook_compliance_fix(facebook)
+
+    facebook.fetch_token(
+        FB_TOKEN_URL,
+        client_secret=FB_CLIENT_SECRET,
+        authorization_response=flask.request.url,
+    )
+
+    # Fetch a protected resource, i.e. user profile, via Graph API
+
+    facebook_user_data = facebook.get(
+        "https://graph.facebook.com/me?fields=id,name,email,picture{url}"
+    ).json()
+
+    email = facebook_user_data["email"]
+    name = facebook_user_data["name"]
+    picture_url = facebook_user_data.get("picture", {}).get("data", {}).get("url")
+
+    return f"""
+    User information: <br>
+    Name: {name} <br>
+    Email: {email} <br>
+    Avatar <img src="{picture_url}"> <br>
+    <a href="/">Home</a>
+    """

@@ -69,7 +69,7 @@
 import DatePicker from 'vue2-datepicker'
 import axios from 'axios'
 import facebookLoginbutton from './components/facebookLogin.vue'
-import calendarView from '/Users/peterkurjanowicz/Desktop/Interesting Projects/bronsons_project/capstone-scheduler/client/src/components/calendarView.vue'
+import calendarView from './components/calendarView.vue'
 import VueTags from "vue-tags";
 
 let moment = require('moment')
