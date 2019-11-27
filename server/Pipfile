@@ -8,6 +8,7 @@ flask-sqlalchemy = "*"
 flask = "*"
 requests-oauthlib = "*"
 python-dotenv = "*"
+pyopenssl = "*"
 
 [dev-packages]
 

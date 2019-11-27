@@ -18,4 +18,4 @@ if __name__ == '__main__':
     app = create_app()
     add_vue_routes(app)
     setup_database(app)
-    app.run(debug=True)
+    app.run(debug=True, ssl_context=('cert.pem', 'key.pem'))
