@@ -4,11 +4,18 @@
 
     
     <input v-model="enteredUserName" id="enteredUserName" /><label for="enteredUserName"> Enter your User Name</label>
+    
     <br>
     <input v-model="enteredPassword"/><label for="enteredPassword"> Enter your password</label>
     <br>
     <button v-on:click="enterLoginInfo();">Login to the Purple Cape Scheduler</button>
     <br>
+    <div v-if="loginInfoBool === false">
+      Login info invalid. Please try again.
+    </div>
+    
+
+
     <p>Don't have a Purple Cape Scheduler?</p>
     <button v-on:click="register();">Register Here</button>
     </div>
@@ -22,7 +29,7 @@ export default {
   data () {
     return {
       userLoggedIn: false,//be careful here, is it submitting true in both scenarios?
-      loginInfoBool: false,
+      loginInfoBool: '',
       enteredUserName: '',
       enteredPassword: '',
       
@@ -44,15 +51,9 @@ methods: {
           
      
     },
-      //userLoggedIn is the state to be handed off to CalendarView, as of now it's not being called
-      loginInfoEntered () {
-        if (this.logInfoBool = True) {
-          console.log('print only if true')
-          this.$emit('loginInfoEntered', this.userLoggedIn)
-        }
-    },
+     
   mounted() {
-    
+     
   }
   
   }
