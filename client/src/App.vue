@@ -1,9 +1,11 @@
 <template>
   <div id="app">
     <!-- Crude login -->
-    <p>App.vue line 4</p>
-    <login v-if!="userLoggedIn" />
     
+    <login v-if!="userLoggedIn" />
+    <div v-if="userLoggedIn">
+      <p>User is Logged In</p>
+    </div>
     <!-- Make API call to find time at specific location -->
     <input type="checkbox" class="check" id="timeCheckbox" v-model="timeCheckbox">
     <label for="timeCheckbox">Check this box to find the current time for a specific location</label>

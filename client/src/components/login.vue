@@ -21,8 +21,8 @@ export default {
   
   data () {
     return {
-      userLoggedIn: true,//be careful here, is it submitting true in both scenarios?
-      logInfoBool: false,
+      userLoggedIn: false,//be careful here, is it submitting true in both scenarios?
+      loginInfoBool: false,
       enteredUserName: '',
       enteredPassword: '',
       
@@ -35,14 +35,19 @@ methods: {
         axios.get('verify_login')
           .then((resp) => {
             this.loginInfoBool = resp.data.loginbool;
-
+            console.log('logininfobool line 38:'+ this.loginInfoBool)
+            if (this.loginInfoBool === true) {
+              console.log('logininfobool line 40:   ' + this.loginInfoBool)
+              this.$emit('loginInfoEntered', this.userLoggedIn)
+              }
           }) 
+          
      
     },
-      //userLoggedIn is the state to be handed off to CalendarView
+      //userLoggedIn is the state to be handed off to CalendarView, as of now it's not being called
       loginInfoEntered () {
         if (this.logInfoBool = True) {
-
+          console.log('print only if true')
           this.$emit('loginInfoEntered', this.userLoggedIn)
         }
     },
