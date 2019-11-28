@@ -7,6 +7,7 @@ import flask
 
 user_api = Blueprint('user_api', __name__)
 
+login_info = []
 
 @user_api.route('/user', methods=['GET'])
 def serve_all_users():
@@ -26,6 +27,7 @@ def serve_all_events():
 def add_user():
     new_user = User()
     new_user.username = request.json["new_user"]
+    new_user.password = request.json["new_password"]
     db.session.add(new_user)
     db.session.commit()
     return jsonify(success=True)
@@ -59,8 +61,26 @@ def user_login():
     
     entered_username = request.json["username_item"]
     entered_password = request.json["password_item"]
-    print("username  line 62 "   + entered_username)
-
+    login_info.append(entered_username)
+    login_info.append(entered_password)
 
     return jsonify(success=True)
+
+@user_api.route('/verify_login', methods=['GET'])
+def verify_login():
+
+    print(login_info)
+    
+    if login_info[0] == str("steve") and login_info[1] == str("sporter1"):
+        loginValid = True
+        print("username and password match line 74")
+        login_info.clear()
+    else:
+        loginValid = False
+        print("username and password do not match")
+        login_info.clear()
+
+
+
+    return jsonify({"loginbool": loginValid})
 

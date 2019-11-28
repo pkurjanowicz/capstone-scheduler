@@ -8,6 +8,9 @@
     <input v-model="enteredPassword"/><label for="enteredPassword"> Enter your password</label>
     <br>
     <button v-on:click="enterLoginInfo();">Login to the Purple Cape Scheduler</button>
+    <br>
+    <p>Don't have a Purple Cape Scheduler?</p>
+    <button v-on:click="register();">Register Here</button>
     </div>
 </template>
 
@@ -18,7 +21,8 @@ export default {
   
   data () {
     return {
-      userLoggedIn: true,
+      userLoggedIn: true,//be careful here, is it submitting true in both scenarios?
+      logInfoBool: false,
       enteredUserName: '',
       enteredPassword: '',
       
@@ -28,13 +32,19 @@ export default {
 methods: {
     enterLoginInfo() {
         axios.post('user_login', { username_item: this.enteredUserName, password_item: this.enteredPassword })
-      
+        axios.get('verify_login')
+          .then((resp) => {
+            this.loginInfoBool = resp.data.loginbool;
+
+          }) 
      
     },
       //userLoggedIn is the state to be handed off to CalendarView
       loginInfoEntered () {
-        this.$emit('loginInfoEntered', this.userLoggedIn)
-        
+        if (this.logInfoBool = True) {
+
+          this.$emit('loginInfoEntered', this.userLoggedIn)
+        }
     },
   mounted() {
     
