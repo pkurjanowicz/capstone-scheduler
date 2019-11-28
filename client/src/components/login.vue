@@ -28,10 +28,11 @@ export default {
   
   data () {
     return {
-      userLoggedIn: false,//be careful here, is it submitting true in both scenarios?
+      userLoggedIn: true,
       loginInfoBool: '',
       enteredUserName: '',
       enteredPassword: '',
+      userRegistered: '',
       
       }
 },
@@ -45,13 +46,18 @@ methods: {
             console.log('logininfobool line 38:'+ this.loginInfoBool)
             if (this.loginInfoBool === true) {
               console.log('logininfobool line 40:   ' + this.loginInfoBool)
-              this.$emit('loginInfoEntered', this.userLoggedIn)
+              this.$emit('enterLoginInfo', this.userLoggedIn)
               }
           }) 
           
      
     },
-     
+    register() {
+      
+      this.userRegistered = false;
+      console.log('userRegistered line 58    ' + this.userRegistered)
+      this.$emit('register', this.userRegistered)
+    },
   mounted() {
      
   }

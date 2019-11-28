@@ -2,10 +2,17 @@
   <div id="app">
     <!-- Crude login -->
     
-    <login v-if!="userLoggedIn" />
+    <login v-if!="userLoggedIn" @enterLoginInfo='enterLoginInfo' 
+        and v-if="userRegistered === ''" @register='register'/>
     <div v-if="userLoggedIn">
       <p>User is Logged In</p>
     </div>
+
+    
+    <register v-if!="userRegistered" />
+    
+    
+
     <!-- Make API call to find time at specific location -->
     <input type="checkbox" class="check" id="timeCheckbox" v-model="timeCheckbox">
     <label for="timeCheckbox">Check this box to find the current time for a specific location</label>
@@ -71,6 +78,7 @@
 import DatePicker from 'vue2-datepicker'
 import axios from 'axios'
 import login from './components/login.vue'
+import register from './components/register.vue'
 import calendarView from './components/calendarView.vue'
 import VueTags from "vue-tags";
 
@@ -82,6 +90,7 @@ export default {
     return {
       currentEventId: '',
       userLoggedIn: false,
+      userRegistered: '',
       emails: [],
       moment: moment,
       inputUserName: '',
@@ -116,10 +125,21 @@ export default {
   components: {
     DatePicker,
     login,
+    register,
     calendarView,
     VueTags
   },
   methods: {
+
+    enterLoginInfo (value) {
+     this.userLoggedIn = value
+    },
+
+    register (value) {
+     console.log("App.vue line 133    ")
+     this.userRegistered = value
+    },
+
     sendInviteEmails(){
       axios.post('/sendinvites', {
         emails: this.emails,
