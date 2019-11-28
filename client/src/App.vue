@@ -2,7 +2,7 @@
   <div id="app">
     <!-- Crude login -->
     <p>App.vue line 4</p>
-    <facebookLoginbutton v-if="this.currentUser == '' " />
+    <login v-if!="userLoggedIn" />
     
     <!-- Make API call to find time at specific location -->
     <input type="checkbox" class="check" id="timeCheckbox" v-model="timeCheckbox">
@@ -68,7 +68,7 @@
 <script>
 import DatePicker from 'vue2-datepicker'
 import axios from 'axios'
-import facebookLoginbutton from './components/facebookLogin.vue'
+import login from './components/login.vue'
 import calendarView from './components/calendarView.vue'
 import VueTags from "vue-tags";
 
@@ -79,6 +79,7 @@ export default {
   data() {
     return {
       currentEventId: '',
+      userLoggedIn: false,
       emails: [],
       moment: moment,
       inputUserName: '',
@@ -112,7 +113,7 @@ export default {
   },
   components: {
     DatePicker,
-    facebookLoginbutton,
+    login,
     calendarView,
     VueTags
   },
@@ -197,7 +198,7 @@ export default {
       // I included an "Update events" button to manually fix the problem.
       axios.post('/usersignup', { new_user: this.inputUserName })
       .then(() => {
-        this.currentUser = this.inputUserName
+        this.currentUser = this.inputUserName //Steve: this is a crucial part of the code already written
         this.inputUserName = ""
         this.getCurrentUserID()
         this.getEvents()
