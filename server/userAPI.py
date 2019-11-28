@@ -58,7 +58,7 @@ def delete_event():
 def user_login():
     
     entered_username = request.json["username_item"]
-    entered_password = request.json["pasword_item"]
+    entered_password = request.json["password_item"]
     print("username  line 62 "   + entered_username)
 
 
