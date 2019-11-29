@@ -14,7 +14,9 @@
     <button v-on:click="enterNewUserInfo();">Register for the Purple Cape Scheduler</button>
     <br>
 
-
+    <div v-if="userNameBool === false">
+      That user name is taken. Please select a unique user name.
+    </div>
 
 
     </div>
@@ -28,6 +30,7 @@ export default {
   data () {
     return {
       newUserRegistered: true,
+      userNameBool: '',
       regBool: '',
       newUserName: '',
       newPassword: '',
@@ -41,22 +44,13 @@ methods: {
     
      enterNewUserInfo () {
         axios.post('usersignup', { new_user: this.newUserName, new_password: this.newPassword })
-
-      /*
-       axios.post('user_register', { new_user: this.newUserName, new_password: this.newPassword })
-       axios.get('verify_registration')
+        axios.get('verify_register')
           .then((resp) => {
-            this.regBool = resp.data.registerBool;
-            
-            if (this.regBool === true) {
-              axios.post('usersignup', { new_user: this.newUserName, new_password: this.newPassword })
-              this.$emit('enterNewUserInfo', this.regBool)
-              }
-          }) 
-       
-      */
+            this.userNameBool = resp.data.newNameBool;
+            console.log("userNameBool line 50   " + this.userNameBool)
+      
+          })
      },
-
   mounted() {
      
   }

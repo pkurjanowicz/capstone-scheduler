@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 user_api = Blueprint('user_api', __name__)
 
 login_info = []
-register_info = []
+newNameValid = ''
 
 @user_api.route('/user', methods=['GET'])
 def serve_all_users():
@@ -27,16 +27,24 @@ def serve_all_events():
 
 @user_api.route('/usersignup', methods=['POST'])
 def add_user():
-    new_user = User()
-    new_user.username = request.json["new_user"]
-    new_user.password = request.json["new_password"]
-    db.session.add(new_user)
-    try:
-        db.session.commit()
-        print("username added successfully")
-    except IntegrityError as error:
-        print("username already taken")
-    return jsonify(success=True)
+        new_user = User()
+        new_user.username = request.json["new_user"]
+        new_user.password = request.json["new_password"]
+        db.session.add(new_user)
+        try:
+            db.session.commit()
+            print("username added successfully")
+            newNameValid = 'True'
+            
+            
+        except IntegrityError as error:
+            print("username already taken")
+            newNameValid = 'False'
+            
+            
+            
+       
+        return jsonify(success=True)
 
 @user_api.route('/newevent', methods=['POST'])
 def add_event():
@@ -69,17 +77,20 @@ def user_login():
     entered_password = request.json["password_item"]
     login_info.append(entered_username)
     login_info.append(entered_password)
-
+    
     return jsonify(success=True)
 
 @user_api.route('/verify_login', methods=['GET'])
 def verify_login():
 
     print(login_info)
-    
-    if login_info[0] == str("steve") and login_info[1] == str("sporter1"):
+
+    test_query = db.session.query(User).filter(User.username==login_info[0], 
+    User.password==login_info[1]).scalar()
+    print("testquery line 90      "      + str(test_query))
+    if test_query != None:
+        print("username and password match")
         loginValid = True
-        print("username and password match line 74")
         login_info.clear()
     else:
         loginValid = False
@@ -90,36 +101,21 @@ def verify_login():
 
     return jsonify({"loginbool": loginValid})
 
-@user_api.route('/user_register', methods=['POST'])
-def user_register():
+@user_api.route('/verify_register', methods=['GET'])
+def verify_register():
+    print("does verifyregister execute")
+    print("newNameValid line 102"    +   newNameValid)
+
+    """
+    line 104 above will not acquire the correct newNameValid boolean
+    value as it is established in the function above at the try catch
+    block. Thus the code below does not execute. It's all about scope and I've 
+    spent some time with it. 
+    """
+    if newNameValid == 'True':
+        registerBool = True
+    elif newNameValid == 'False':
+        registerBool = False
     
-    new_username = request.json["new_user"]
-    new_password = request.json["new_password"]
-    register_info.append(new_username)
-    register_info.append(new_password)
+    return jsonify({"newNameBool": registerBool})
 
-    return jsonify(success=True)
-"""
-@user_api.route('/verify_registration', methods=['GET'])
-def verify_registration():
-
-
-    acquired_names = []
-
-    variable_instances = db.session.query(User).all()
-    acquired_names.append([User.username for variable in variable_instances])
-    
-
-    registerValid = True
-
-    
-    new_user_name_check = register_info[0]
-
-    returned_check = User.query.filter_by(username=new_user_name_check).all()
-    print("returned check line 94    " + str(returned_check))
-
-    
-
-    return jsonify({"registerBool": registerValid})
-
-"""
