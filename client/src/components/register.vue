@@ -2,6 +2,21 @@
   <div class="boxes">
     
     <p>Register with The Purple Cape Scheduler</p>
+    <br>
+
+    <input v-model="newUserName" id="newUserName" /><label for="newUserName"> Enter a User Name</label>
+    
+    <br>
+    <input v-model="newPassword"/><label for="newPassword"> Enter a password</label>
+    <br>
+    <input v-model="passwordConfirm"/><label for="passwordConfirm"> Confirm your password</label>
+    <br>
+    <button v-on:click="enterNewUserInfo();">Register for the Purple Cape Scheduler</button>
+    <br>
+
+
+
+
     </div>
 </template>
 
@@ -12,6 +27,11 @@ export default {
   
   data () {
     return {
+      newUserRegistered: true,
+      regBool: '',
+      newUserName: '',
+      newPassword: '',
+      passwordConfirm: '',
     
       
       }
@@ -19,7 +39,24 @@ export default {
 
 methods: {
     
-     
+     enterNewUserInfo () {
+        axios.post('usersignup', { new_user: this.newUserName, new_password: this.newPassword })
+
+      /*
+       axios.post('user_register', { new_user: this.newUserName, new_password: this.newPassword })
+       axios.get('verify_registration')
+          .then((resp) => {
+            this.regBool = resp.data.registerBool;
+            
+            if (this.regBool === true) {
+              axios.post('usersignup', { new_user: this.newUserName, new_password: this.newPassword })
+              this.$emit('enterNewUserInfo', this.regBool)
+              }
+          }) 
+       
+      */
+     },
+
   mounted() {
      
   }

@@ -4,10 +4,12 @@ from models import User, Event
 from datetime import datetime
 import os
 import flask
+from sqlalchemy.exc import IntegrityError
 
 user_api = Blueprint('user_api', __name__)
 
 login_info = []
+register_info = []
 
 @user_api.route('/user', methods=['GET'])
 def serve_all_users():
@@ -29,7 +31,11 @@ def add_user():
     new_user.username = request.json["new_user"]
     new_user.password = request.json["new_password"]
     db.session.add(new_user)
-    db.session.commit()
+    try:
+        db.session.commit()
+        print("username added successfully")
+    except IntegrityError as error:
+        print("username already taken")
     return jsonify(success=True)
 
 @user_api.route('/newevent', methods=['POST'])
@@ -84,3 +90,36 @@ def verify_login():
 
     return jsonify({"loginbool": loginValid})
 
+@user_api.route('/user_register', methods=['POST'])
+def user_register():
+    
+    new_username = request.json["new_user"]
+    new_password = request.json["new_password"]
+    register_info.append(new_username)
+    register_info.append(new_password)
+
+    return jsonify(success=True)
+"""
+@user_api.route('/verify_registration', methods=['GET'])
+def verify_registration():
+
+
+    acquired_names = []
+
+    variable_instances = db.session.query(User).all()
+    acquired_names.append([User.username for variable in variable_instances])
+    
+
+    registerValid = True
+
+    
+    new_user_name_check = register_info[0]
+
+    returned_check = User.query.filter_by(username=new_user_name_check).all()
+    print("returned check line 94    " + str(returned_check))
+
+    
+
+    return jsonify({"registerBool": registerValid})
+
+"""
