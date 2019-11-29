@@ -4,8 +4,8 @@
 
     
     <input v-model="enteredUserName" id="enteredUserName" /><label for="enteredUserName"> Enter your User Name</label>
-    
     <br>
+    
     <input v-model="enteredPassword"/><label for="enteredPassword"> Enter your password</label>
     <br>
     <button v-on:click="enterLoginInfo();">Login to the Purple Cape Scheduler</button>
@@ -13,12 +13,10 @@
     <div v-if="loginInfoBool === false">
       Login info invalid. Please try again.
     </div>
-    
-
-
     <p>Don't have a Purple Cape Scheduler?</p>
     <button v-on:click="register();">Register Here</button>
     </div>
+
 </template>
 
 <script>
@@ -43,19 +41,14 @@ methods: {
         axios.get('verify_login')
           .then((resp) => {
             this.loginInfoBool = resp.data.loginbool;
-            console.log('logininfobool line 38:'+ this.loginInfoBool)
             if (this.loginInfoBool === true) {
-              console.log('logininfobool line 40:   ' + this.loginInfoBool)
               this.$emit('enterLoginInfo', this.userLoggedIn)
               }
           }) 
-          
-     
     },
     register() {
       
       this.userRegistered = false;
-      console.log('userRegistered line 58    ' + this.userRegistered)
       this.$emit('register', this.userRegistered)
     },
   mounted() {

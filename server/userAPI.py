@@ -9,7 +9,8 @@ from sqlalchemy.exc import IntegrityError
 user_api = Blueprint('user_api', __name__)
 
 login_info = []
-newNameValid = ''
+newNameValid = 'True'
+passwordMatch = 'True'
 
 @user_api.route('/user', methods=['GET'])
 def serve_all_users():
@@ -30,20 +31,24 @@ def add_user():
         new_user = User()
         new_user.username = request.json["new_user"]
         new_user.password = request.json["new_password"]
+        new_confirm = request.json["new_pass_confirm"]
         db.session.add(new_user)
-        try:
-            db.session.commit()
-            print("username added successfully")
-            newNameValid = 'True'
+
+        if new_user.password != new_confirm:
+            print("passwords do not match")
+            passwordMatch = 'False'
+        else:
+
+            try:
+                db.session.commit()
+                print("username added successfully")
+                newNameValid = 'True'
+                
+                
+            except IntegrityError as error:
+                print("username already taken")
+                newNameValid = 'False'
             
-            
-        except IntegrityError as error:
-            print("username already taken")
-            newNameValid = 'False'
-            
-            
-            
-       
         return jsonify(success=True)
 
 @user_api.route('/newevent', methods=['POST'])
@@ -83,18 +88,14 @@ def user_login():
 @user_api.route('/verify_login', methods=['GET'])
 def verify_login():
 
-    print(login_info)
-
     test_query = db.session.query(User).filter(User.username==login_info[0], 
     User.password==login_info[1]).scalar()
-    print("testquery line 90      "      + str(test_query))
+    
     if test_query != None:
-        print("username and password match")
         loginValid = True
         login_info.clear()
     else:
         loginValid = False
-        print("username and password do not match")
         login_info.clear()
 
 
@@ -103,19 +104,29 @@ def verify_login():
 
 @user_api.route('/verify_register', methods=['GET'])
 def verify_register():
-    print("does verifyregister execute")
-    print("newNameValid line 102"    +   newNameValid)
-
+    
     """
-    line 104 above will not acquire the correct newNameValid boolean
-    value as it is established in the function above at the try catch
+    newNameValid will not pass the correct boolean
+    value as it is established in the usersignup function above at the try catch
     block. Thus the code below does not execute. It's all about scope and I've 
-    spent some time with it. 
+    spent some time with it. User cannot register a duplicate user name but transmitting
+    that message accurately in browser is the issue now
+
+    Still need message in browser for unmatching passwords
+    Still need to log user in at successful registration
+
+    For testing purposes I set newNameValid and passwordMatch as true near
+    top of code. But again, the code below
+    has no scope on newNameValid or passwordMatch 
+    as it is established in usersignup as it should be. My attempts at an axios
+    get request in usersignup have brought up other errors, even when I set 
+    usersignup as a function with both POST and GET in the router
     """
-    if newNameValid == 'True':
+    if newNameValid == 'True' and passwordMatch == 'True':
         registerBool = True
-    elif newNameValid == 'False':
+    else:
         registerBool = False
+        
     
     return jsonify({"newNameBool": registerBool})
 

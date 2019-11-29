@@ -5,7 +5,6 @@
     <br>
 
     <input v-model="newUserName" id="newUserName" /><label for="newUserName"> Enter a User Name</label>
-    
     <br>
     <input v-model="newPassword"/><label for="newPassword"> Enter a password</label>
     <br>
@@ -29,12 +28,13 @@ export default {
   
   data () {
     return {
-      newUserRegistered: true,
+      userRegistered: true,
       userNameBool: '',
       regBool: '',
       newUserName: '',
       newPassword: '',
       passwordConfirm: '',
+      userLoggedIn: true,
     
       
       }
@@ -43,12 +43,16 @@ export default {
 methods: {
     
      enterNewUserInfo () {
-        axios.post('usersignup', { new_user: this.newUserName, new_password: this.newPassword })
+        axios.post('usersignup', { new_user: this.newUserName, new_password: this.newPassword, 
+                  new_pass_confirm: this.passwordConfirm })
         axios.get('verify_register')
           .then((resp) => {
             this.userNameBool = resp.data.newNameBool;
-            console.log("userNameBool line 50   " + this.userNameBool)
-      
+            if (this.userNameBool === true) {
+              this.userLoggedIn = true;
+              this.$emit('enterNewUserInfo', this.userRegistered)
+              this.$emit('enterNewUserInfo', this.userLoggedIn)
+              }
           })
      },
   mounted() {

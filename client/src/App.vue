@@ -4,6 +4,8 @@
     
     <login v-if!="userLoggedIn" @enterLoginInfo='enterLoginInfo' 
         and v-if="userRegistered === ''" @register='register'/>
+
+    <register v-if!="userLoggedIn" @enterNewUserInfo='enterNewUserInfo' />
     <div v-if="userLoggedIn">
       <p>User is Logged In</p>
     </div>
@@ -136,8 +138,11 @@ export default {
     },
 
     register (value) {
-     console.log("App.vue line 133    ")
      this.userRegistered = value
+    },
+
+    enterNewUserInfo (value) {
+      this.userLoggedIn = value
     },
 
     sendInviteEmails(){
