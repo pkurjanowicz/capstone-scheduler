@@ -8,9 +8,11 @@ from sqlalchemy.exc import IntegrityError
 
 user_api = Blueprint('user_api', __name__)
 
+
 login_info = []
-newNameValid = 'True'
-passwordMatch = 'True'
+new_name_valid = []
+password_match = []
+registerBool = ''
 
 @user_api.route('/user', methods=['GET'])
 def serve_all_users():
@@ -34,22 +36,37 @@ def add_user():
         new_confirm = request.json["new_pass_confirm"]
         db.session.add(new_user)
 
+        
+
         if new_user.password != new_confirm:
             print("passwords do not match")
-            passwordMatch = 'False'
+            
         else:
 
+            password_match.append('True')
             try:
                 db.session.commit()
                 print("username added successfully")
-                newNameValid = 'True'
+                new_name_valid.append('True')
+                print("newnamevalid line 50     " + str(new_name_valid))
+                
                 
                 
             except IntegrityError as error:
                 print("username already taken")
-                newNameValid = 'False'
-            
-        return jsonify(success=True)
+
+        if 'True' in new_name_valid and 'True' in password_match:
+                registerBool = True
+                print("registerBool is true")
+        else:
+                registerBool = False
+        
+        new_name_valid.clear()
+        password_match.clear()
+                
+                
+        print("registerBool line 68     " + str(registerBool))
+        return jsonify({"newNameBool": registerBool})
 
 @user_api.route('/newevent', methods=['POST'])
 def add_event():
@@ -101,32 +118,3 @@ def verify_login():
 
 
     return jsonify({"loginbool": loginValid})
-
-@user_api.route('/verify_register', methods=['GET'])
-def verify_register():
-    
-    """
-    newNameValid will not pass the correct boolean
-    value as it is established in the usersignup function above at the try catch
-    block. Thus the code below does not execute. It's all about scope and I've 
-    spent some time with it. User cannot register a duplicate user name but transmitting
-    that message accurately in browser is the issue now
-
-    Still need message in browser for unmatching passwords
-    Still need to log user in at successful registration
-
-    For testing purposes I set newNameValid and passwordMatch as true near
-    top of code. But again, the code below
-    has no scope on newNameValid or passwordMatch 
-    as it is established in usersignup as it should be. My attempts at an axios
-    get request in usersignup have brought up other errors, even when I set 
-    usersignup as a function with both POST and GET in the router
-    """
-    if newNameValid == 'True' and passwordMatch == 'True':
-        registerBool = True
-    else:
-        registerBool = False
-        
-    
-    return jsonify({"newNameBool": registerBool})
-

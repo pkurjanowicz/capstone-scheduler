@@ -44,16 +44,11 @@ methods: {
     
      enterNewUserInfo () {
         axios.post('usersignup', { new_user: this.newUserName, new_password: this.newPassword, 
-                  new_pass_confirm: this.passwordConfirm })
-        axios.get('verify_register')
-          .then((resp) => {
-            this.userNameBool = resp.data.newNameBool;
-            if (this.userNameBool === true) {
-              this.userLoggedIn = true;
-              this.$emit('enterNewUserInfo', this.userRegistered)
-              this.$emit('enterNewUserInfo', this.userLoggedIn)
-              }
-          })
+                  new_pass_confirm: this.passwordConfirm }).then((resp)  => {
+                    this.userNameBool = resp.data.newNameBool;
+                    console.log("userNameBool line 49" + this.userNameBool)
+                  })
+
      },
   mounted() {
      
