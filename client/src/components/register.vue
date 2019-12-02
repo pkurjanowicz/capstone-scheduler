@@ -31,14 +31,13 @@ export default {
   
   data () {
     return {
+      userLoggedIn: false,
       userRegistered: true,
       passMatchBool: '',
       userNameBool: '',
       newUserName: '',
       newPassword: '',
       passwordConfirm: '',
-      userLoggedIn: true,
-    
       
       }
 },
@@ -51,6 +50,10 @@ methods: {
                     this.userRegistered = resp.data.regBool;
                     this.passMatchBool = resp.data.passwordBool;
                     this.userNameBool = resp.data.newNameBool;
+                    if (this.userRegistered === true) {
+                      this.userLoggedIn = true;
+                      this.$emit('enterNewUserInfo', this.userLoggedIn)
+                      }
                     
                   })
 
