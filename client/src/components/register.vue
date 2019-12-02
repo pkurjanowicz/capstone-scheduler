@@ -16,6 +16,9 @@
     <div v-if="userNameBool === false">
       That user name is taken. Please select a unique user name.
     </div>
+    <div v-if="passMatchBool === false">
+      Your password and password confirmation do not match. Please enter the same password twice.
+    </div>
 
 
     </div>
@@ -29,8 +32,8 @@ export default {
   data () {
     return {
       userRegistered: true,
+      passMatchBool: '',
       userNameBool: '',
-      regBool: '',
       newUserName: '',
       newPassword: '',
       passwordConfirm: '',
@@ -45,8 +48,10 @@ methods: {
      enterNewUserInfo () {
         axios.post('usersignup', { new_user: this.newUserName, new_password: this.newPassword, 
                   new_pass_confirm: this.passwordConfirm }).then((resp)  => {
+                    this.userRegistered = resp.data.regBool;
+                    this.passMatchBool = resp.data.passwordBool;
                     this.userNameBool = resp.data.newNameBool;
-                    console.log("userNameBool line 49" + this.userNameBool)
+                    
                   })
 
      },

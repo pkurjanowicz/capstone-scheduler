@@ -10,9 +10,10 @@ user_api = Blueprint('user_api', __name__)
 
 
 login_info = []
-new_name_valid = []
-password_match = []
+passBool = ''
+nameBool = ''
 registerBool = ''
+
 
 @user_api.route('/user', methods=['GET'])
 def serve_all_users():
@@ -36,37 +37,27 @@ def add_user():
         new_confirm = request.json["new_pass_confirm"]
         db.session.add(new_user)
 
-        
+       
+        try:
 
-        if new_user.password != new_confirm:
-            print("passwords do not match")
-            
-        else:
-
-            password_match.append('True')
-            try:
-                db.session.commit()
-                print("username added successfully")
-                new_name_valid.append('True')
-                print("newnamevalid line 50     " + str(new_name_valid))
-                
-                
-                
-            except IntegrityError as error:
-                print("username already taken")
-
-        if 'True' in new_name_valid and 'True' in password_match:
-                registerBool = True
-                print("registerBool is true")
-        else:
+            if new_user.password != new_confirm:
+                passBool = False
                 registerBool = False
+                nameBool = True
+            
+            else:
+            
+                passBool = True
+                db.session.commit()
+                nameBool = True
+                registerBool = True
+                
+        except IntegrityError as error:
         
-        new_name_valid.clear()
-        password_match.clear()
-                
-                
-        print("registerBool line 68     " + str(registerBool))
-        return jsonify({"newNameBool": registerBool})
+            registerBool = False
+            nameBool = False
+        
+        return jsonify(regBool=registerBool, passwordBool=passBool, newNameBool = nameBool)
 
 @user_api.route('/newevent', methods=['POST'])
 def add_event():
