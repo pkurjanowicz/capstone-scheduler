@@ -1,17 +1,9 @@
 <template>
   <div id="app">
     <!-- Crude login -->
-    
-    <login v-if!="userLoggedIn" @enterLoginInfo='enterLoginInfo' 
-        and v-if="userRegistered === ''" @register='register'/>
-
-    <register v-if!="userLoggedIn" @enterNewUserInfo='enterNewUserInfo' />
     <div v-if="userLoggedIn">
       <p>User is Logged In</p>
-    </div>
-
     
-    <register v-if!="userRegistered" />
     
     
 
@@ -74,6 +66,17 @@
     :calendarEvents='zippedEvent'
     />
   </div>
+  
+    <div v-else-if="userRegistered === ''" >
+      <login @enterLoginInfo='enterLoginInfo' />
+    <!-- button click for register makes a state wherre user is neither logged nor registered -->
+    </div>
+    
+    <div v-else-if="userRegistered === false" >
+      <p>when do i display</p>
+      <register/>
+    </div>
+    </div>
 </template>
 
 <script>

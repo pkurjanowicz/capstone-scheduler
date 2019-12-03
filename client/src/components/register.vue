@@ -32,7 +32,7 @@ export default {
   data () {
     return {
       userLoggedIn: false,
-      userRegistered: true,
+      userRegistered: '',
       passMatchBool: '',
       userNameBool: '',
       newUserName: '',

@@ -30,7 +30,7 @@ export default {
       loginInfoBool: '',
       enteredUserName: '',
       enteredPassword: '',
-      userRegistered: '',
+      userRegistered: false
       
       }
 },
@@ -49,6 +49,7 @@ methods: {
     register() {
       
       this.userRegistered = false;
+      console.log("userRegistered lilne 52    " + this.userRegistered)
       this.$emit('register', this.userRegistered)
     },
   mounted() {
