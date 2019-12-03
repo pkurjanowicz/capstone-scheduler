@@ -9,6 +9,8 @@
                     <div>
                         <p>Here is the title:<br> {{ title }}</p><br><br>
                         <p>Here are the details:<br> {{ details }}</p>
+                        <p> here is the start: {{start}}</p>
+                        <p> Here is the end: {{end}}</p>
                     </div>
                 </slot>
             </section>
@@ -19,7 +21,7 @@
 <script>
 export default {
     name: "eventDetailsModal",
-    props: ['title', 'details'],
+    props: ['title', 'details','start','end'],
     methods: {
         close() {
         this.$emit('close');

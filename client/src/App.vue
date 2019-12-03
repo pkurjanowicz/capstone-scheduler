@@ -1,8 +1,12 @@
 <template>
   <div id="app">
     <!-- Crude login -->
-    <facebookLoginbutton v-if="this.currentUser == '' " />
-    
+    <!-- <facebookLoginbutton v-if="this.currentUser == '' " /> -->
+    <input v-if="this.currentUser == '' " v-model="inputUserName" v-on:keyup.enter="submitNewUsername"/>
+    <button v-if="this.currentUser == '' " @click="submitNewUsername">Enter a username</button>
+    <p v-if="this.currentUser != '' ">Welcome {{ currentUser }}!</p>
+    <button v-if="this.currentUser != '' " @click="switchUser">Change user</button>
+    <br>
     <!-- Make API call to find time at specific location -->
     <input type="checkbox" class="check" id="timeCheckbox" v-model="timeCheckbox">
     <label for="timeCheckbox">Check this box to find the current time for a specific location</label>
@@ -52,7 +56,6 @@
     <p id="failedEntry" v-if="failedEntry == true">You must be logged in, set a time, enter an event name, and enter a description.</p>
     <button @click="submitNewEvent">Submit</button>
     <hr>
-    {{emails}}
 
     <!-- list all events for current user -->
     <!-- <h2>My events</h2>
@@ -71,6 +74,8 @@
         @close="closeModal()"
         :title='eventClickTitle'
         :details='eventClickDescription'
+        :start='eventClickStart'
+        :end='eventClickEnd'
       />
     </div>
   </div>
@@ -91,6 +96,7 @@ export default {
   name: 'app',
   data() {
     return {
+      isModalVisible: false,
       currentEventId: '',
       emails: [],
       moment: moment,
@@ -127,22 +133,21 @@ export default {
     DatePicker,
     facebookLoginbutton,
     calendarView,
-    eventDetailsModal
-  },
-  methods: {
-    //Data is passed from the calendarView component to the parent(App.vue)
-    //Then this data is passed to the eventDetailsModal component for use there
-    eventClick(title, description) {
-      this.eventClickTitle = title
-      this.eventClickDescription = description
-      this.isModalVisible = true
-      console.log('click handled')
-    },
-    closeModal() {
-      this.isModalVisible = false;
+    eventDetailsModal,
     VueTags
   },
   methods: {
+    eventClick(title, description, start, end) {
+      this.eventClickTitle = title
+      this.eventClickDescription = description
+      this.eventClickStart = start
+      this.eventClickEnd = end
+      this.isModalVisible = true
+      console.log(this.zippedEvent)
+    },
+    closeModal() {
+      this.isModalVisible = false;
+    },
     sendInviteEmails(){
       axios.post('/sendinvites', {
         emails: this.emails,
@@ -271,6 +276,8 @@ export default {
             extendedProps: {
               title: this.eventResponseNames[i].event_name,
               description: this.eventResponseDetails[i].details,
+              start: stringConvertStartTime,
+              end: stringConvertEndTime, 
             },
             })
             // id: this.eventResponseID[i].id ** PK
@@ -300,7 +307,7 @@ export default {
     }
   }
 }
-}
+
 </script>
 
 <style>

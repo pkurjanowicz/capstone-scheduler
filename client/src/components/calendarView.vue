@@ -53,6 +53,8 @@ export default {
       calendarWeekends: true,
       eventClickTitle: '',
       eventClickDetails: '',
+      eventClickStart: '',
+      eventClickEnd: '',
     }
   },
   methods: {
@@ -71,7 +73,9 @@ export default {
     handleEventClick(arg) {
       this.eventClickTitle = arg.event.extendedProps.title
       this.eventClickDetails = arg.event.extendedProps.description
-      this.$emit('eventClick', this.eventClickTitle, this.eventClickDetails) 
+      this.eventClickStart = arg.event.extendedProps.start
+      this.eventClickEnd = arg.event.extendedProps.end
+      this.$emit('eventClick', this.eventClickTitle, this.eventClickDetails, this.eventClickStart, this.eventClickEnd) 
     },
     eventRender(info) {
     console.log(info.event.extendedProps);
