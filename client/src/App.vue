@@ -68,13 +68,13 @@
   </div>
   
     <div v-else-if="userRegistered === ''" >
-      <login @enterLoginInfo='enterLoginInfo' />
+      <login  />
     <!-- button click for register makes a state wherre user is neither logged nor registered -->
     </div>
     
-    <div v-else-if="userRegistered === false" >
+    <div v-else-if= "userRegistered === false" @register='register' >
       <p>when do i display</p>
-      <register/>
+      <register />
     </div>
     </div>
 </template>
