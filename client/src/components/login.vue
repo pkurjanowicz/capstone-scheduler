@@ -43,6 +43,7 @@ methods: {
           .then((resp) => {
             this.loginInfoBool = resp.data.loginbool;
             if (this.loginInfoBool === true) {
+              console.log("userLoggedIn line 46    "   + this.userLoggedIn)
               this.$emit('enterLoginInfo', this.userLoggedIn)
               }
           }) 

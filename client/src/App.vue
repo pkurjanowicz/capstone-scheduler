@@ -1,9 +1,13 @@
 <template>
   <div id="app" >
     
-    <!-- Crude login -->
+    
     <div v-if="userLoggedIn">
       <p>User is Logged In</p>
+    </div>
+  
+    <register v-else-if="userRegistrationActive" />
+    <login v-else @register="register"/>
     
     
     
@@ -66,10 +70,7 @@
     <calendarView
     :calendarEvents='zippedEvent'
     />
-  </div>
   
-  <register v-else-if="userRegistrationActive" />
-  <login v-else @register="register" />
     
   </div>
 </template>
