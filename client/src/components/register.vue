@@ -32,7 +32,7 @@ export default {
   data () {
     return {
       userLoggedIn: false,
-      userRegistrationActive: false,
+      userRegistrationActive: true,
       passMatchBool: '',
       userNameBool: '',
       newUserName: '',
@@ -47,7 +47,7 @@ methods: {
      enterNewUserInfo () {
         axios.post('usersignup', { new_user: this.newUserName, new_password: this.newPassword, 
                   new_pass_confirm: this.passwordConfirm }).then((resp)  => {
-                    this.userRegistrationActive = resp.data.regBool;
+                    this.userRegistered = resp.data.regBool;
                     this.passMatchBool = resp.data.passwordBool;
                     this.userNameBool = resp.data.newNameBool;
                     if (this.userRegistered === true) {

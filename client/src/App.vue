@@ -1,16 +1,8 @@
 <template>
   <div id="app" >
     
-    
     <div v-if="userLoggedIn">
       <p>User is Logged In</p>
-    </div>
-  
-    <register v-else-if="userRegistrationActive" />
-    <login v-else @register="register"/>
-    
-    
-    
 
     <!-- Make API call to find time at specific location -->
     <input type="checkbox" class="check" id="timeCheckbox" v-model="timeCheckbox">
@@ -70,9 +62,17 @@
     <calendarView
     :calendarEvents='zippedEvent'
     />
-  
-    
   </div>
+  
+  <div v-else-if="userRegistrationActive" >
+      <p>userRegistrationActive</p>
+      <register v-on:enterNewUserInfo="enterNewUserInfo" />
+  </div>
+  <div v-else >
+      <login v-on:enterLoginInfo="enterLoginInfo" or v-on:register="register" />
+  </div>
+  </div>
+  
 </template>
 
 <script>
@@ -137,7 +137,7 @@ export default {
     },
 
     register (value) {
-     this.userRegistered = value
+     this.userRegistrationActive = value
     },
 
     enterNewUserInfo (value) {
