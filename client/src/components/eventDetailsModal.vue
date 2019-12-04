@@ -11,6 +11,7 @@
                         <p>Here are the details:<br> {{ details }}</p>
                         <p> here is the start: {{start}}</p>
                         <p> Here is the end: {{end}}</p>
+                        <p v-for='(invite, index) in invites' :key='index'> email:{{invite.email}} {{invite.accepted}}</p>
                     </div>
                 </slot>
             </section>
@@ -21,7 +22,7 @@
 <script>
 export default {
     name: "eventDetailsModal",
-    props: ['title', 'details','start','end'],
+    props: ['title', 'details','start','end', 'invites'],
     methods: {
         close() {
         this.$emit('close');

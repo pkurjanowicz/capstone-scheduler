@@ -76,6 +76,7 @@
         :details='eventClickDescription'
         :start='eventClickStart'
         :end='eventClickEnd'
+        :invites='eventInvites'
       />
     </div>
   </div>
@@ -126,7 +127,8 @@ export default {
       startTime: '',
       endTime: '',
       range: [],
-      failedEntry: false
+      failedEntry: false,
+      eventInvites: '',
     }        
   },
   components: {
@@ -137,13 +139,20 @@ export default {
     VueTags
   },
   methods: {
-    eventClick(title, description, start, end) {
+    eventClick(title, description, start, end, id) {
       this.eventClickTitle = title
       this.eventClickDescription = description
       this.eventClickStart = start
       this.eventClickEnd = end
       this.isModalVisible = true
-      console.log(this.zippedEvent)
+      this.getInvites(id)
+    },
+    getInvites(id) {
+      axios.post('/getinvites',{
+        event_id: id
+      }).then(resp => {
+        this.eventInvites = resp.data.all_invites
+      })
     },
     closeModal() {
       this.isModalVisible = false;
@@ -254,7 +263,6 @@ export default {
       axios.get('/getevents')
       .then((response) => {
         let currentResponse = response.data.all_events
-        console.log(currentResponse)
         for (let i = 0; i < currentResponse.length; i++) {
           if (this.currentUserID === currentResponse[i].owner_id) {
 
@@ -278,9 +286,10 @@ export default {
               description: this.eventResponseDetails[i].details,
               start: stringConvertStartTime,
               end: stringConvertEndTime, 
+              id: this.eventResponseID[i].id,
             },
             })
-            // id: this.eventResponseID[i].id ** PK
+            //  ** PK
             //Maybe I will use these later? ** PK
         }
         this.eventResponseNames = []
@@ -295,7 +304,6 @@ export default {
       axios.get("http://worldtimeapi.org/api/timezone")
       .then((response) => {
         this.zones = response.data
-        console.log(this.zones)
       })
     },
     selectTimezone() {

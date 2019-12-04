@@ -55,6 +55,7 @@ export default {
       eventClickDetails: '',
       eventClickStart: '',
       eventClickEnd: '',
+      eventClickId: '',
     }
   },
   methods: {
@@ -75,10 +76,10 @@ export default {
       this.eventClickDetails = arg.event.extendedProps.description
       this.eventClickStart = arg.event.extendedProps.start
       this.eventClickEnd = arg.event.extendedProps.end
-      this.$emit('eventClick', this.eventClickTitle, this.eventClickDetails, this.eventClickStart, this.eventClickEnd) 
+      this.eventClickId = arg.event.extendedProps.id
+      this.$emit('eventClick', this.eventClickTitle, this.eventClickDetails, this.eventClickStart, this.eventClickEnd, this.eventClickId) 
     },
     eventRender(info) {
-    console.log(info.event.extendedProps);
     // {description: "Lecture", department: "BioChemistry"}
   }
   }
