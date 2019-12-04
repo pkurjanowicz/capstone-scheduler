@@ -1,5 +1,6 @@
 <template>
-  <div id="app">
+  <div id="app" >
+    
     <!-- Crude login -->
     <div v-if="userLoggedIn">
       <p>User is Logged In</p>
@@ -67,16 +68,10 @@
     />
   </div>
   
-    <div v-else-if="userRegistered === ''" >
-      <login  />
-    <!-- button click for register makes a state wherre user is neither logged nor registered -->
-    </div>
+  <register v-else-if="userRegistrationActive" />
+  <login v-else @register="register" />
     
-    <div v-else-if= "userRegistered === false" @register='register' >
-      <p>when do i display</p>
-      <register />
-    </div>
-    </div>
+  </div>
 </template>
 
 <script>
@@ -95,7 +90,7 @@ export default {
     return {
       currentEventId: '',
       userLoggedIn: false,
-      userRegistered: '',
+      userRegistrationActive: false,
       emails: [],
       moment: moment,
       inputUserName: '',

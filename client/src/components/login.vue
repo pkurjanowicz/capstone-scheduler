@@ -27,10 +27,11 @@ export default {
   data () {
     return {
       userLoggedIn: true,
+      userRegistrationActive: false,
       loginInfoBool: '',
       enteredUserName: '',
       enteredPassword: '',
-      userRegistered: false
+      
       
       }
 },
@@ -47,10 +48,9 @@ methods: {
           }) 
     },
     register() {
-      
-      this.userRegistered = false;
-      console.log("userRegistered lilne 52    " + this.userRegistered)
-      this.$emit('register', this.userRegistered)
+      this.userRegistrationActive = true;
+      console.log("userregactive"    +   this.userRegistrationActive);
+      this.$emit('register', this.userRegistrationActive)
     },
   mounted() {
      
