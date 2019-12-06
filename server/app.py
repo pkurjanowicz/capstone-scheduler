@@ -22,3 +22,4 @@ def create_app():
 def setup_database(app):
     with app.app_context():
         db.create_all()
+        # db.drop_all()

@@ -1,6 +1,5 @@
 <template>
     <div>
-    <p>fbLogin line 3</p>
 
     <facebook-login class="button"
       
