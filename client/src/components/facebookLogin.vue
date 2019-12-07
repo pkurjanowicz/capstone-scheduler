@@ -1,7 +1,6 @@
 <template>
     <div>
 
-
     <facebook-login class="button"
       
       appId="2344508732526791"
