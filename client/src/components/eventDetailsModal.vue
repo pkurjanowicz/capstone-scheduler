@@ -7,11 +7,10 @@
             <section class="modal-body">
                 <slot name="body">
                     <div>
-                        <p>Here is the title:<br> {{ title }}</p><br><br>
-                        <p>Here are the details:<br> {{ details }}</p>
-                        <p> here is the start: {{start}}</p>
-                        <p> Here is the end: {{end}}</p>
-                        <p v-for='(invite, index) in invites' :key='index'> email:{{invite.email}} {{invite.accepted}}</p>
+                        <p>{{start}} - {{end}}</p>
+                        <h2>{{ title }}</h2>
+                        <p>{{ details }}</p>
+                        <p class ='invites' :class='isAccepted(invite)' v-for='(invite, index) in invites' :key='index'> {{invite.email}}</p>
                     </div>
                 </slot>
             </section>
@@ -27,10 +26,26 @@ export default {
         close() {
         this.$emit('close');
         },
+        isAccepted(invite) {
+            if (invite.accepted == true) {
+                return 'is-coming'
+            } else {
+                return 'not-coming'
+            }
+        }
     }
 }
 </script>
 
 <style scoped>
-
+.invites {
+    display:flex;
+    flex-direction: column;
+}
+.is-coming {
+    background: rgb(213, 255, 213);
+}
+.not-coming {
+    background: rgb(255, 214, 214);
+}
 </style>
