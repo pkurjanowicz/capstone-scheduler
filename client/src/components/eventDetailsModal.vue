@@ -26,33 +26,11 @@ export default {
     methods: {
         close() {
         this.$emit('close');
-      },
+        },
     }
 }
 </script>
 
 <style scoped>
-.modal-backdrop {
-    position: static;
-    margin: 100% 0 0 0;
-}
 
-.modal {
-    background: #FFFFFF;
-    display: flex;
-    flex-direction: column;
-    border: 3px solid blue;
-    padding: 10%;
-    height: 100%;
-    width: 200px;
-}
-
-.modal-header {
-    display: flex;
-}
-
-.x-out-button {
-    margin-left: auto;
-    order: 2;
-}
 </style>
