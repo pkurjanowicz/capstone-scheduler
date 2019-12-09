@@ -80,9 +80,12 @@ export default {
       this.$emit('dateClick', this.newEventClickDate);
     },
     handleEventClick(arg) {
-      this.eventClickTitle = arg.event.extendedProps.title;
-      this.eventClickDetails = arg.event.extendedProps.description;
-      this.$emit('eventClick', this.eventClickTitle, this.eventClickDetails);
+      this.eventClickTitle = arg.event.extendedProps.title
+      this.eventClickDetails = arg.event.extendedProps.description
+      this.eventClickStart = arg.event.extendedProps.start
+      this.eventClickEnd = arg.event.extendedProps.end
+      this.eventClickId = arg.event.extendedProps.id
+      this.$emit('eventClick', this.eventClickTitle, this.eventClickDetails, this.eventClickStart, this.eventClickEnd, this.eventClickId) 
     },
     handleSelectClick(info) {
       // console.log('selected ' + info.startStr + ' to ' + info.endStr);
@@ -94,7 +97,6 @@ export default {
       this.$emit('select', this.selectStartDate, this.selectEndDate, this.selectAllDay);
     },
     eventRender(info) {
-    console.log(info.event.extendedProps);
     // {description: "Lecture", department: "BioChemistry"}
   }
   }

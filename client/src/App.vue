@@ -26,6 +26,9 @@
         @close="closeModal()"
         :title='eventClickTitle'
         :details='eventClickDescription'
+        :start='eventClickStart'
+        :end='eventClickEnd'
+        :invites='eventInvites'
       />
     </div>
     <!-- Enter event information -->
@@ -61,6 +64,7 @@ export default {
   name: 'app',
   data() {
     return {
+      isModalVisible: false,
       currentEventId: '',
       moment: moment,
       inputUserName: '',
@@ -75,7 +79,8 @@ export default {
       sharedUsers: [], 
       isModalVisible: false,
       newEventClickDate: '',
-      showAddEventModal: false
+      showAddEventModal: false,
+      eventInvites: '',
     }        
   },
   components: {
@@ -85,13 +90,21 @@ export default {
     addEventModal,
   },
   methods: {
-    //Data is passed from the calendarView component to the parent(App.vue)
-    //Then this data is passed to the eventDetailsModal component for use there
-    eventClick(title, description) {
+    eventClick(title, description, start, end, id) {
       this.eventClickTitle = title
       this.eventClickDescription = description
+      this.eventClickStart = start
+      this.eventClickEnd = end
       this.isModalVisible = true
-      console.log('click handled')
+      this.getInvites(id)
+    },
+    getInvites(id) {
+      axios.post('/getinvites',{
+        event_id: id
+      }).then(resp => {
+        this.eventInvites = resp.data.all_invites
+        console.log(this.eventInvites)
+      })
     },
     dateClick(date){
       this.newEventClickDate = date;
@@ -192,9 +205,12 @@ export default {
             extendedProps: {
               title: this.eventResponseNames[i].event_name,
               description: this.eventResponseDetails[i].details,
+              start: stringConvertStartTime,
+              end: stringConvertEndTime, 
+              id: this.eventResponseID[i].id,
             },
             })
-            // id: this.eventResponseID[i].id ** PK
+            //  ** PK
             //Maybe I will use these later? ** PK
         }
         this.eventResponseNames = []

@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from db_instance import db
-from models import User, Event
+from models import User, Event, Invites
 from datetime import datetime
 
 user_api = Blueprint('user_api', __name__)
@@ -18,6 +18,13 @@ def serve_all_events():
     #  below because this is being used in that format on the calendar ** PK
     user_events = [{"id":event.id, "event_name": event.event_name, "details": event.details, "start_time": event.start_time.strftime("%Y-%m-%d %H:%M:%S"), "end_time":event.end_time.strftime("%Y-%m-%d %H:%M:%S"), "all_day": event.all_day, "owner_id":event.owner_id} for event in event_instances]
     return jsonify({"all_events": user_events})
+
+@user_api.route('/getinvites', methods=['POST'])
+def get_invites():
+    event_id = request.json["event_id"]
+    event_invites = Invites.query.filter_by(event_id=event_id).all()
+    event_invites_array = [{'email':event_invite.invitee_email, 'accepted': event_invite.accepted} for event_invite in event_invites]
+    return jsonify({'all_invites': event_invites_array})
 
 @user_api.route('/usersignup', methods=['POST'])
 def add_user():
