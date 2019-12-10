@@ -121,6 +121,8 @@ export default {
     },
     enterLoginInfo (value) {
      this.userLoggedIn = value
+     if (this.userLoggedIn === true)
+        this.getCurrentUserID();
     },
 
     register (value) {
@@ -186,15 +188,14 @@ export default {
     clearEventList() {
       this.zippedEvent = []
     },
+    //use function below but don't break it
+    // perhaps if userLoggedIN === true getCurrentUserID()
+    //currentResponse is acquiring the correct ID, is currentUser necessary?
     getCurrentUserID() {
       axios.get('/user')
       .then((response) => {
-        let currentResponse = response.data.usernames
-        for (let i = 0; i < currentResponse.length; i++) {
-          if (this.currentUser === currentResponse[i].username) {
-            this.currentUserID = currentResponse[i].id
-          }
-        }
+        this.currentUserID = response.data.usernames
+        
       })
     },
     submitNewUsername() {

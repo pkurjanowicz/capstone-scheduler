@@ -13,11 +13,20 @@ passBool = ''
 nameBool = ''
 registerBool = ''
 
-
+"""
+function below could be a good place to start. Unclear as of now, whether
+serving all users is required. Instead I think we are trying to serve
+a logged in user. Keep in mind there are two paths to being logged in:
+a login or a successful registration. The query to the database below returns 
+every user in db, not sure that's necessary at this point. ALso, not clear that
+the user name is even required, at this point  at least. The get request in APp
+extracts ID and only ID. I think the call to getCurrentUserID() is missing.
+"""
 @user_api.route('/user', methods=['GET'])
 def serve_all_users():
-    user_instances = db.session.query(User).all()
-    user_usernames = [{"id": user.id, "username": user.username} for user in user_instances]
+    
+    user_usernames = session['test_query']
+    print("usernames line 30    " + str(user_usernames))
     return jsonify({"usernames": user_usernames})
 
 @user_api.route('/getevents', methods=['GET'])
