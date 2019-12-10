@@ -96,7 +96,6 @@ export default {
     }        
   },
   components: {
-    DatePicker,
     login,
     register,
     calendarView,
