@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, Blueprint
+from flask import Flask, render_template, Blueprint, session
 from userAPI import user_api, User, Event
 from emailAPI import email_api
 from db_instance import db
@@ -16,6 +16,7 @@ def create_app():
     db.init_app(app)
     app.register_blueprint(user_api)
     app.register_blueprint(email_api)
+    app.secret_key = os.environ["SECRET_KEY"]
 
     return app
 

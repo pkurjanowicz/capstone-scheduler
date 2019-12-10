@@ -1,8 +1,9 @@
 <template>
   <div id="app" >
     
-    <div v-if="userLoggedIn">
-      <p>User is Logged In</p>
+    <div v-if="userLoggedIn" >
+      
+    <button v-on:click="logout();">Logout</button>
 
     <!-- Make API call to find time at specific location -->
     <input type="checkbox" class="check" id="timeCheckbox" v-model="timeCheckbox">
@@ -65,7 +66,6 @@
   </div>
   
   <div v-else-if="userRegistrationActive" >
-      <p>userRegistrationActive</p>
       <register v-on:enterNewUserInfo="enterNewUserInfo" />
   </div>
   <div v-else >
@@ -132,6 +132,20 @@ export default {
   },
   methods: {
 
+    checkSession() {
+        axios.get('checksession')
+        .then((resp) => {
+            this.userLoggedIn = resp.data.session
+      })
+    },
+
+    logout() {
+      axios.get('logout')
+         .then((resp) => {
+            this.userLoggedIn = false;
+    })
+      
+    },
     enterLoginInfo (value) {
      this.userLoggedIn = value
     },
@@ -296,7 +310,13 @@ export default {
         this.chosenTimezoneString = moment(response.data.datetime).toString()
       })
     }
+
+  },
+  mounted () {
+    this.checkSession();
+
   }
+
 }
 </script>
 

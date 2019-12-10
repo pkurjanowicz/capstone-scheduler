@@ -1,11 +1,8 @@
 <template>
   <div class="boxes">
-    
-
-    
+  
     <input v-model="enteredUserName" id="enteredUserName" /><label for="enteredUserName"> Enter your User Name</label>
     <br>
-    
     <input v-model="enteredPassword"/><label for="enteredPassword"> Enter your password</label>
     <br>
     <button v-on:click="enterLoginInfo();">Login to the Purple Cape Scheduler</button>
@@ -16,11 +13,11 @@
     <p>Don't have a Purple Cape Scheduler?</p>
     <button v-on:click="register();">Register Here</button>
     </div>
-
 </template>
 
 <script>
 import axios from 'axios';
+
 export default {
   name: "login",
   
@@ -32,32 +29,36 @@ export default {
       enteredUserName: '',
       enteredPassword: '',
       
-      
       }
 },
 
 methods: {
+
     enterLoginInfo() {
         axios.post('user_login', { username_item: this.enteredUserName, password_item: this.enteredPassword })
-        axios.get('verify_login')
-          .then((resp) => {
-            this.loginInfoBool = resp.data.loginbool;
-            if (this.loginInfoBool === true) {
-              console.log("userLoggedIn line 46    "   + this.userLoggedIn)
-              this.$emit('enterLoginInfo', this.userLoggedIn)
-              }
-          }) 
+        this.verifyLogin();
     },
     register() {
       this.userRegistrationActive = true;
-      console.log("userregactive"    +   this.userRegistrationActive);
       this.$emit('register', this.userRegistrationActive)
     },
+    verifyLogin() {
+      axios.get('verify_login')
+          .then((resp) => {
+            this.loginInfoBool = resp.data.loginbool;
+            if (this.loginInfoBool === true) {
+              this.$emit('enterLoginInfo', this.userLoggedIn)
+             }
+          }) 
+    },
+
+  },
   mounted() {
-     
+    this.checkSession();
   }
-  
-  }
+
+
+
 }
 </script>
 <style>

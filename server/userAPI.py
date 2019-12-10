@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, jsonify, request, redirect
+from flask import Flask, Blueprint, jsonify, request, redirect, session
 from db_instance import db
 from models import User, Event
 from datetime import datetime
@@ -7,7 +7,6 @@ import flask
 from sqlalchemy.exc import IntegrityError
 
 user_api = Blueprint('user_api', __name__)
-
 
 login_info = []
 passBool = ''
@@ -37,20 +36,21 @@ def add_user():
         new_confirm = request.json["new_pass_confirm"]
         db.session.add(new_user)
 
-       
         try:
 
             if new_user.password != new_confirm:
                 passBool = False
                 registerBool = False
                 nameBool = True
-            
+                
             else:
             
                 passBool = True
                 db.session.commit()
                 nameBool = True
                 registerBool = True
+                session['new_user'] = new_user.id
+                usernamesession = session['new_user']
                 
         except IntegrityError as error:
         
@@ -101,11 +101,45 @@ def verify_login():
     
     if test_query != None:
         loginValid = True
+        session['test_query'] = test_query.id
+        usernamesession = session['test_query']
         login_info.clear()
     else:
         loginValid = False
         login_info.clear()
 
-
-
     return jsonify({"loginbool": loginValid})
+
+@user_api.route('/checksession', methods=["GET"])
+def check_session():
+    
+    if 'test_query' in session:
+
+        return jsonify(
+                session = True,
+                user = session['test_query'] 
+                )
+    elif 'new_user' in session:
+        
+        return jsonify(
+                session = True,
+                user = session['new_user'] 
+                )
+        
+    else:
+        
+        return jsonify(session = False)
+
+@user_api.route("/logout", methods=["GET"])
+def logout():
+
+    if 'test_query' in session:
+        del session['test_query']
+
+        return jsonify(success=True)
+
+    else:
+        del session['new_user']
+
+        return jsonify(success=True)
+
