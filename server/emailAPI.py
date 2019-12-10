@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, render_template
 from db_instance import db
 from models import Invites
 import smtplib
@@ -32,11 +32,12 @@ def sendinvites():
             <body>
                 <p>Hi!<br>
                 How are you?<br>
-                Here is the <a href="https://www.python.org">link</a> you wanted.
+                <a href='http://127.0.0.1:5000/response?event_id={}&email={}&response=True'><button>Click here to accept</button></a>
+                <button>Click here to reject</button>
                 </p>
             </body>
             </html>
-            """
+            """.format(event_id,email)
 
             # Record the MIME types of both parts - text/plain and text/html.
             # part1 = MIMEText(text, 'plain')
@@ -55,4 +56,15 @@ def sendinvites():
             print('Success!')
         return jsonify(success=True)
 
+@email_api.route('/response', methods=['GET'])
+def responded_to_email():
+    response = request.args.get('response')
+    event_id = request.args.get('event_id')
+    email = request.args.get('email')
+    find_invite = Invites.query.filter_by(invitee_email=email).filter_by(event_id=event_id).first()
+    current_accepted_value = find_invite.accepted
+    if current_accepted_value == False and response == 'True':
+        update_invite = find_invite.accepted = True
+        db.session.commit()
+    return render_template('response.html')
 

@@ -5,6 +5,10 @@ from emailAPI import email_api
 from db_instance import db
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
+project_paths = project_dir.split("/")
+project_paths.pop()
+project_paths.append('db')
+project_dir = "/".join(project_paths)
 
 def create_app():
     app = Flask(__name__,
@@ -23,4 +27,8 @@ def create_app():
 def setup_database(app):
     with app.app_context():
         db.create_all()
+<<<<<<< HEAD
 
+=======
+        # db.drop_all()
+>>>>>>> dev
