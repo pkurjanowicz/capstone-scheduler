@@ -127,6 +127,9 @@ export default {
 
     register (value) {
      this.userRegistrationActive = value
+     if (this.userLoggedIn === true)
+        this.getCurrentUserID();
+     
     },
 
     enterNewUserInfo (value) {
@@ -190,11 +193,16 @@ export default {
     },
     //use function below but don't break it
     // perhaps if userLoggedIN === true getCurrentUserID()
-    //currentResponse is acquiring the correct ID, is currentUser necessary?
+    //currentResponse is acquiring the correct ID but only
+    //at first login of user, not after refresh of browser, errors
+    //that it does get after first login I don't recognize
+
     getCurrentUserID() {
       axios.get('/user')
       .then((response) => {
+        
         this.currentUserID = response.data.usernames
+        console.log("currentuserid line    "   + this.currentUserID)
         
       })
     },
