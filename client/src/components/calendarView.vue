@@ -53,6 +53,7 @@ export default {
         interactionPlugin // needed for dateClick ** PK
       ],
       timeZone: 'local',
+      editable: true,
       calendarWeekends: true,
       calendarSelectable: true,
       eventClickTitle: '',
