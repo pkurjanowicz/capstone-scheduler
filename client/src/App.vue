@@ -68,7 +68,6 @@ import axios from 'axios'
 import login from './components/login.vue'
 import register from './components/register.vue'
 import calendarView from './components/calendarView.vue'
-import VueTags from "vue-tags";
 import eventDetailsModal from './components/eventDetailsModal.vue'
 import addEventModal from './components/addEventModal.vue'
 
@@ -82,7 +81,10 @@ export default {
       userRegistrationActive: false,
       isModalVisible: false,
       currentEventId: '',
+      moment: moment,
+      inputUserName: '',
       currentUserID: '',
+      currentUser: '',
       eventResponseNames: [],
       eventResponseDetails: [],
       eventResponseStartTime: [],
@@ -99,7 +101,6 @@ export default {
     login,
     register,
     calendarView,
-    VueTags,
     eventDetailsModal,
     addEventModal,
   },
@@ -119,7 +120,7 @@ export default {
     })
       
     },
-    enterLoginInfo (value) {
+    enterLoginInfo (value) { 
      this.userLoggedIn = value
      if (this.userLoggedIn === true)
         this.getCurrentUserID();
