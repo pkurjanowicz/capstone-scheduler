@@ -1,11 +1,14 @@
 <template>
-  <div id="app">
-    <!-- Crude login -->
-    <!-- <facebookLoginbutton v-if="this.currentUser == '' " /> -->
-    <input class="signin-input" v-if="this.currentUser == '' " v-model="inputUserName" v-on:keyup.enter="submitNewUsername"/>
-    <button class="button signinbutton" v-if="this.currentUser == '' " @click="submitNewUsername">Enter a username</button>
-    <p v-if="this.currentUser != '' ">Welcome {{ currentUser }}!</p>
-    <button class="button" v-if="this.currentUser != '' " @click="switchUser">Change user</button>
+  <div id="app" >
+    
+    <div v-if="userLoggedIn" >
+      
+    <button v-on:click="logout();">Logout</button>
+
+    <!-- Make API call to find time at specific location -->
+    <input type="checkbox" class="check" id="timeCheckbox" v-model="timeCheckbox">
+    <label for="timeCheckbox">Check this box to find the current time for a specific location</label>
+  
     <br>
     <!-- list all events for current user -->
     <!-- <h2>My events</h2>
@@ -49,11 +52,21 @@
 
   </div>
   </div>
+  
+  <div v-else-if="userRegistrationActive" >
+      <register v-on:enterNewUserInfo="enterNewUserInfo" />
+  </div>
+  <div v-else >
+      <login v-on:enterLoginInfo="enterLoginInfo" or v-on:register="register" />
+  </div>
+  </div>
+  
 </template>
 
 <script>
 import axios from 'axios'
-import facebookLoginbutton from './components/facebookLogin.vue'
+import login from './components/login.vue'
+import register from './components/register.vue'
 import calendarView from './components/calendarView.vue'
 import eventDetailsModal from './components/eventDetailsModal.vue'
 import addEventModal from './components/addEventModal.vue'
@@ -64,12 +77,14 @@ export default {
   name: 'app',
   data() {
     return {
+      userLoggedIn: false,
+      userRegistrationActive: false,
       isModalVisible: false,
       currentEventId: '',
       moment: moment,
       inputUserName: '',
-      currentUser: '',
       currentUserID: '',
+      currentUser: '',
       eventResponseNames: [],
       eventResponseDetails: [],
       eventResponseStartTime: [],
@@ -77,19 +92,63 @@ export default {
       eventResponseID: [],
       zippedEvent: [],
       sharedUsers: [], 
-      isModalVisible: false,
       newEventClickDate: '',
       showAddEventModal: false,
       eventInvites: '',
     }        
   },
   components: {
-    facebookLoginbutton,
+    login,
+    register,
     calendarView,
     eventDetailsModal,
     addEventModal,
   },
   methods: {
+
+    checkSession() {
+        axios.get('checksession')
+        .then((resp) => {
+            this.userLoggedIn = resp.data.session
+      })
+    },
+
+    logout() {
+      axios.get('logout')
+         .then((resp) => {
+            this.userLoggedIn = false;
+    })
+      
+    },
+    enterLoginInfo (value) { 
+     this.userLoggedIn = value
+     if (this.userLoggedIn === true)
+        this.getCurrentUserID();
+    },
+
+    register (value) {
+     this.userRegistrationActive = value
+     if (this.userLoggedIn === true)
+        this.getCurrentUserID();
+     
+    },
+
+    enterNewUserInfo (value) {
+      this.userLoggedIn = value
+    },
+
+    sendInviteEmails(){
+      axios.post('/sendinvites', {
+        emails: this.emails,
+        event_id: this.currentEventId
+      }).then(() => {
+        this.currentEventId = []
+      })
+    
+    
+    
+  },
+ 
     eventClick(title, description, start, end, id) {
       this.eventClickTitle = title
       this.eventClickDescription = description
@@ -133,15 +192,19 @@ export default {
     clearEventList() {
       this.zippedEvent = []
     },
+    //use function below but don't break it
+    // perhaps if userLoggedIN === true getCurrentUserID()
+    //currentResponse is acquiring the correct ID but only
+    //at first login of user, not after refresh of browser, errors
+    //that it does get after first login I don't recognize
+
     getCurrentUserID() {
       axios.get('/user')
       .then((response) => {
-        let currentResponse = response.data.usernames
-        for (let i = 0; i < currentResponse.length; i++) {
-          if (this.currentUser === currentResponse[i].username) {
-            this.currentUserID = currentResponse[i].id
-          }
-        }
+        
+        this.currentUserID = response.data.usernames
+        console.log("currentuserid line    "   + this.currentUserID)
+        
       })
     },
     submitNewUsername() {
@@ -149,7 +212,7 @@ export default {
       // I included an "Update events" button to manually fix the problem.
       axios.post('/usersignup', { new_user: this.inputUserName })
       .then(() => {
-        this.currentUser = this.inputUserName
+        this.currentUser = this.inputUserName //Steve: this is a crucial part of the code already written
         this.inputUserName = ""
         this.getCurrentUserID()
         this.getEvents()
@@ -224,8 +287,15 @@ export default {
       var local = moment(stillUtc).local().format('YYYY-MM-DD HH:mm:ss');
       return local;
     }
+
+  },
+  mounted () {
+    this.checkSession();
+
   }
 }
+
+
 
 </script>
 
