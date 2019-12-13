@@ -4,8 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask-sqlalchemy = "*"
-flask = "*"
+django-seed = "*"
+sqlalchemy-seed = "*"
+sqlalchemy = "*"
+node = "*"
+flask-session = "*"
 
 [dev-packages]
 

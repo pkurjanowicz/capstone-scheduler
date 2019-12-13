@@ -5,6 +5,7 @@ import VueTags from "vue-tags";
 Vue.config.productionTip = false
 Vue.component("input-tags", VueTags);
 
+
 new Vue({
   render: h => h(App),
 }).$mount('#app')

@@ -56,9 +56,9 @@ export default {
     name: "addEventModal",
     data() {
         return{
-            // userID: '',
+            userID: '',
             emails: [],
-            timeCheckbox: false,
+            timeCheckbox: false,  
             eventName: '',
             eventDetails: '',
             eventID: '',

@@ -8,6 +8,8 @@ django-seed = "*"
 sqlalchemy-seed = "*"
 sqlalchemy = "*"
 node = "*"
+flask = "*"
+requests-oauthlib = "*"
 
 [dev-packages]
 
