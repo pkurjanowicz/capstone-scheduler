@@ -6,9 +6,9 @@
 
     <input v-model="newUserName" id="newUserName" /><label for="newUserName"> Enter a User Name</label>
     <br>
-    <input v-model="newPassword"/><label for="newPassword"> Enter a password</label>
+    <input v-model="newPassword" type="password" /><label for="newPassword"> Enter a password</label>
     <br>
-    <input v-model="passwordConfirm"/><label for="passwordConfirm"> Confirm your password</label>
+    <input v-model="passwordConfirm" type="password" /><label for="passwordConfirm"> Confirm your password</label>
     <br>
     <button v-on:click="enterNewUserInfo();">Register for the Purple Cape Scheduler</button>
     <br>
