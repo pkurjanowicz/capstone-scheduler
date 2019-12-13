@@ -117,6 +117,7 @@ export default {
       axios.get('logout')
          .then((resp) => {
             this.userLoggedIn = false;
+            this.userRegistrationActive = false;
     })
       
     },
@@ -128,13 +129,14 @@ export default {
 
     register (value) {
      this.userRegistrationActive = value
-     if (this.userLoggedIn === true)
-        this.getCurrentUserID();
      
     },
 
     enterNewUserInfo (value) {
       this.userLoggedIn = value
+      if (this.userLoggedIn === true)
+        this.getCurrentUserID();
+      
     },
 
     sendInviteEmails(){
@@ -201,7 +203,7 @@ export default {
     getCurrentUserID() {
       axios.get('/user')
       .then((response) => {
-        
+        //no console log here at first registration
         this.currentUserID = response.data.usernames
         console.log("currentuserid line    "   + this.currentUserID)
         
