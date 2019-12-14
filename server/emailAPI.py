@@ -4,10 +4,11 @@ from models import Invites
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import os
 
 email_api = Blueprint('email_api', __name__)
 gmail_user = 'pkurjanowicz10@gmail.com'
-gmail_password = '*b?g?cTFA{da4bC'
+gmail_password = os.environ['GMAIL_PASS']
 
 @email_api.route('/sendinvites', methods=['POST'])
 def sendinvites():
