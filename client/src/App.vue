@@ -100,6 +100,7 @@ export default {
         axios.get('checksession')
         .then((resp) => {
             this.userLoggedIn = resp.data.session
+
             this.getCurrentUserID()
             this.getEvents()
       })
@@ -115,11 +116,11 @@ export default {
     },
     enterLoginInfo (value) { 
      this.userLoggedIn = value
+
      if (this.userLoggedIn === true) {
         this.getCurrentUserID()
         this.getEvents()
      }
-    },
 
     register (value) {
      this.userRegistrationActive = value
