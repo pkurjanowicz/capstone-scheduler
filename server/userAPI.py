@@ -13,11 +13,20 @@ passBool = ''
 nameBool = ''
 registerBool = ''
 
+"""
+function below is not serving users at first successful registration
+"""
+
 @user_api.route('/user', methods=['GET'])
 def serve_all_users():
+
+    try:
+        user_usernames = session['test_query']
+    except KeyError:
+        user_usernames = session['new_user']
+        print("usernames line 30    " + str(user_usernames))
     
-    user_usernames = session['test_query']
-    print("usernames line 30    " + str(user_usernames))
+    
     return jsonify({"usernames": user_usernames})
 
 @user_api.route('/getevents', methods=['GET'])
