@@ -3,17 +3,8 @@
     
     <div v-if="userLoggedIn" >
       
-    <button v-on:click="logout();">Logout</button>
+    <button v-on:click="logout()">Logout</button>
 
-    <!-- Make API call to find time at specific location -->
-    <input type="checkbox" class="check" id="timeCheckbox" v-model="timeCheckbox">
-    <label for="timeCheckbox">Check this box to find the current time for a specific location</label>
-  
-    <br>
-    <!-- list all events for current user -->
-    <!-- <h2>My events</h2>
-    <button @click="getEvents">Update my events</button>
-    <br> -->
   <div class="calendar_eventdetails"> 
     <div style="width:100%;">
       <calendarView
@@ -49,7 +40,6 @@
       :allDay="newEventAllDay"
       />
     </div>
-
   </div>
   </div>
   
@@ -110,6 +100,9 @@ export default {
         axios.get('checksession')
         .then((resp) => {
             this.userLoggedIn = resp.data.session
+
+            this.getCurrentUserID()
+            this.getEvents()
       })
     },
 
@@ -123,9 +116,11 @@ export default {
     },
     enterLoginInfo (value) { 
      this.userLoggedIn = value
-     if (this.userLoggedIn === true)
-        this.getCurrentUserID();
-    },
+
+     if (this.userLoggedIn === true) {
+        this.getCurrentUserID()
+        this.getEvents()
+     }
 
     register (value) {
      this.userRegistrationActive = value
@@ -293,7 +288,6 @@ export default {
   },
   mounted () {
     this.checkSession();
-
   }
 }
 
