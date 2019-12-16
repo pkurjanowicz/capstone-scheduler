@@ -13,10 +13,6 @@ passBool = ''
 nameBool = ''
 registerBool = ''
 
-"""
-function below is not serving users at first successful registration
-"""
-
 @user_api.route('/user', methods=['GET'])
 def serve_all_users():
 
@@ -42,6 +38,7 @@ def get_invites():
     event_id = request.json["event_id"]
     event_invites = Invites.query.filter_by(event_id=event_id).all()
     event_invites_array = [{'email':event_invite.invitee_email, 'accepted': event_invite.accepted} for event_invite in event_invites]
+    print("eventinvitesarray line 41    " + str(event_invites_array))
     return jsonify({'all_invites': event_invites_array})
 
 @user_api.route('/usersignup', methods=['POST'])

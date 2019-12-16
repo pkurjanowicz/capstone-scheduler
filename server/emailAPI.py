@@ -12,6 +12,7 @@ gmail_password = 'AtYoqLFPDQpTfrpWKT.zLP*4FU'
 @email_api.route('/sendinvites', methods=['POST'])
 def sendinvites():
     emails = request.json["emails"]
+    print("emails line 15    " + str(emails))
     event_id = request.json['event_id']
     if emails != '':
         for email in emails:

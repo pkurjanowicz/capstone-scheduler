@@ -79,6 +79,7 @@ export default {
             this.$emit('close');
         },
         submitNewEvent() {
+            console.log("emails line 82"   + this.emails)
             this.clearEvents()
             this.failedEntry = false
 
@@ -125,9 +126,12 @@ export default {
         return
         },
         sendInviteEmails(){
+            console.log("emails line 129"  + this.emails)
             axios.post('/sendinvites', {
+                
                 emails: this.emails,
                 event_id: this.currentEventId
+                
             }).then(() => {
                 this.currentEventId = []
             })
