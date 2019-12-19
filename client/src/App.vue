@@ -121,6 +121,7 @@ export default {
         this.getCurrentUserID()
         this.getEvents()
      }
+    },
 
     register (value) {
      this.userRegistrationActive = value
@@ -141,9 +142,6 @@ export default {
       }).then(() => {
         this.currentEventId = []
       })
-    
-    
-    
   },
  
     eventClick(title, description, start, end, id) {
