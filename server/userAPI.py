@@ -92,7 +92,7 @@ def add_event():
         db.session.commit()
     return jsonify(success=True, event_id=new_event.id)
 
-@user_api.route('/deleteevent', methods=['DELETE'])
+@user_api.route('/deleteevent', methods=['POST'])
 def delete_event():
     event_id = request.json["event_id"]
     to_delete = Event.query.filter_by(id=event_id).one()
