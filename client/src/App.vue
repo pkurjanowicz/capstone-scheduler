@@ -23,6 +23,7 @@
         :start='eventClickStart'
         :end='eventClickEnd'
         :invites='eventInvites'
+        @deleteEvent='deleteEventNow'
       />
     </div>
     <!-- Enter event information -->
@@ -49,6 +50,7 @@
   <div v-else >
       <login v-on:enterLoginInfo="enterLoginInfo" or v-on:register="register" />
   </div>
+  {{this.selectedEventId}}
   </div>
   
 </template>
@@ -85,6 +87,7 @@ export default {
       newEventClickDate: '',
       showAddEventModal: false,
       eventInvites: '',
+      selectedEventId: '',
     }        
   },
   components: {
@@ -121,6 +124,7 @@ export default {
         this.getCurrentUserID()
         this.getEvents()
      }
+    },
 
     register (value) {
      this.userRegistrationActive = value
@@ -141,9 +145,6 @@ export default {
       }).then(() => {
         this.currentEventId = []
       })
-    
-    
-    
   },
  
     eventClick(title, description, start, end, id) {
@@ -153,6 +154,7 @@ export default {
       this.eventClickEnd = end
       this.isModalVisible = true
       this.getInvites(id)
+      this.selectedEventId = id
     },
     getInvites(id) {
       axios.post('/getinvites',{
@@ -177,12 +179,10 @@ export default {
       this.isModalVisible = false;
       this.showAddEventModal = false;
     },
-    deleteEvent(id) {
-      // There is currently an issue with the delete button failing to remove list items sometimes.
-      // Refreshing the page restores proper functionality.
-      // Update: perhaps it's related to a potential race condition, where the updated list isn't properly rendered in time.
-      axios.delete('/deleteevent', {data: { event_id: id } })
+    deleteEventNow() {
+      axios.post('/deleteevent', {event_id: this.selectedEventId })
       .then(() => {
+        this.closeModal()
         this.getEvents()
       })
     },

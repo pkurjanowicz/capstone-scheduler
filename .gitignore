@@ -3,3 +3,4 @@ server/dist
 db/*
 personal/*
 server/.env
+server/secrets.py
