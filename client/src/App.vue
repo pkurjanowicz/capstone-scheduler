@@ -1,16 +1,10 @@
 <template>
-  <div id="app">
-    <!-- Crude login -->
-    <!-- <facebookLoginbutton v-if="this.currentUser == '' " /> -->
-    <input class="signin-input" v-if="this.currentUser == '' " v-model="inputUserName" v-on:keyup.enter="submitNewUsername"/>
-    <button class="button signinbutton" v-if="this.currentUser == '' " @click="submitNewUsername">Enter a username</button>
-    <p v-if="this.currentUser != '' ">Welcome {{ currentUser }}!</p>
-    <button class="button" v-if="this.currentUser != '' " @click="switchUser">Change user</button>
-    <br>
-    <!-- list all events for current user -->
-    <!-- <h2>My events</h2>
-    <button @click="getEvents">Update my events</button>
-    <br> -->
+  <div id="app" >
+    
+    <div v-if="userLoggedIn" >
+      
+    <button v-on:click="logout()">Logout</button>
+
   <div class="calendar_eventdetails"> 
     <div style="width:100%;">
       <calendarView
@@ -30,6 +24,7 @@
         :start='eventClickStart'
         :end='eventClickEnd'
         :invites='eventInvites'
+        @deleteEvent='deleteEventNow'
       />
     </div>
     <!-- Enter event information -->
@@ -47,9 +42,18 @@
       :allDay="newEventAllDay"
       />
     </div>
-
   </div>
   </div>
+  
+  <div v-else-if="userRegistrationActive" >
+      <register v-on:enterNewUserInfo="enterNewUserInfo" />
+  </div>
+  <div v-else >
+      <login v-on:enterLoginInfo="enterLoginInfo" or v-on:register="register" />
+  </div>
+  {{this.selectedEventId}}
+  </div>
+  
 </template>
 
 <script>
@@ -64,12 +68,14 @@ export default {
   name: 'app',
   data() {
     return {
+      userLoggedIn: false,
+      userRegistrationActive: false,
       isModalVisible: false,
       currentEventId: '',
       moment: moment,
       inputUserName: '',
-      currentUser: '',
       currentUserID: '',
+      currentUser: '',
       eventResponseNames: [],
       eventResponseDetails: [],
       eventResponseStartTime: [],
@@ -77,7 +83,6 @@ export default {
       eventResponseID: [],
       zippedEvent: [],
       sharedUsers: [], 
-      isModalVisible: false,
       newEventClickDate: '',
       showAddEventModal: false,
       eventInvites: '',
@@ -90,6 +95,55 @@ export default {
     addEventModal,
   },
   methods: {
+
+    checkSession() {
+        axios.get('checksession')
+        .then((resp) => {
+            this.userLoggedIn = resp.data.session
+
+            this.getCurrentUserID()
+            this.getEvents()
+      })
+    },
+
+    logout() {
+      axios.get('logout')
+         .then((resp) => {
+            this.userLoggedIn = false;
+            this.userRegistrationActive = false;
+    })
+      
+    },
+    enterLoginInfo (value) { 
+     this.userLoggedIn = value
+
+     if (this.userLoggedIn === true) {
+        this.getCurrentUserID()
+        this.getEvents()
+     }
+    },
+
+    register (value) {
+     this.userRegistrationActive = value
+     
+    },
+
+    enterNewUserInfo (value) {
+      this.userLoggedIn = value
+      if (this.userLoggedIn === true)
+        this.getCurrentUserID();
+      
+    },
+
+    sendInviteEmails(){
+      axios.post('/sendinvites', {
+        emails: this.emails,
+        event_id: this.currentEventId
+      }).then(() => {
+        this.currentEventId = []
+      })
+  },
+ 
     eventClick(title, description, start, end, id) {
       this.eventClickTitle = title
       this.eventClickDescription = description
@@ -97,6 +151,7 @@ export default {
       this.eventClickEnd = end
       this.isModalVisible = true
       this.getInvites(id)
+      this.selectedEventId = id
     },
     getInvites(id) {
       axios.post('/getinvites',{
@@ -137,27 +192,29 @@ export default {
       this.isModalVisible = false;
       this.showAddEventModal = false;
     },
-    deleteEvent(id) {
-      // There is currently an issue with the delete button failing to remove list items sometimes.
-      // Refreshing the page restores proper functionality.
-      // Update: perhaps it's related to a potential race condition, where the updated list isn't properly rendered in time.
-      axios.delete('/deleteevent', {data: { event_id: id } })
+    deleteEventNow() {
+      axios.post('/deleteevent', {event_id: this.selectedEventId })
       .then(() => {
+        this.closeModal()
         this.getEvents()
       })
     },
     clearEventList() {
       this.zippedEvent = []
     },
+    //use function below but don't break it
+    // perhaps if userLoggedIN === true getCurrentUserID()
+    //currentResponse is acquiring the correct ID but only
+    //at first login of user, not after refresh of browser, errors
+    //that it does get after first login I don't recognize
+
     getCurrentUserID() {
       axios.get('/user')
       .then((response) => {
-        let currentResponse = response.data.usernames
-        for (let i = 0; i < currentResponse.length; i++) {
-          if (this.currentUser === currentResponse[i].username) {
-            this.currentUserID = currentResponse[i].id
-          }
-        }
+        //no console log here at first registration
+        this.currentUserID = response.data.usernames
+        console.log("currentuserid line    "   + this.currentUserID)
+        
       })
     },
     submitNewUsername() {
@@ -165,7 +222,7 @@ export default {
       // I included an "Update events" button to manually fix the problem.
       axios.post('/usersignup', { new_user: this.inputUserName })
       .then(() => {
-        this.currentUser = this.inputUserName
+        this.currentUser = this.inputUserName //Steve: this is a crucial part of the code already written
         this.inputUserName = ""
         this.getCurrentUserID()
         this.getEvents()
@@ -245,8 +302,14 @@ export default {
       var local = moment(stillUtc).local().format('YYYY-MM-DD HH:mm:ss');
       return local;
     }
+
+  },
+  mounted () {
+    this.checkSession();
   }
 }
+
+
 
 </script>
 

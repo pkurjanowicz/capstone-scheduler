@@ -1,14 +1,32 @@
-from flask import Blueprint, jsonify, request
+from flask import Flask, Blueprint, jsonify, request, redirect, session
 from db_instance import db
 from models import User, Event, Invites
 from datetime import datetime
+import os
+import flask
+from sqlalchemy.exc import IntegrityError
 
 user_api = Blueprint('user_api', __name__)
 
+login_info = []
+passBool = ''
+nameBool = ''
+registerBool = ''
+
+"""
+function below is not serving users at first successful registration
+"""
+
 @user_api.route('/user', methods=['GET'])
 def serve_all_users():
-    user_instances = db.session.query(User).all()
-    user_usernames = [{"id": user.id, "username": user.username} for user in user_instances]
+
+    try:
+        user_usernames = session['test_query']
+    except KeyError:
+        user_usernames = session['new_user']
+        print("usernames line 30    " + str(user_usernames))
+    
+    
     return jsonify({"usernames": user_usernames})
 
 @user_api.route('/getevents', methods=['GET'])
@@ -30,11 +48,34 @@ def get_invites():
 
 @user_api.route('/usersignup', methods=['POST'])
 def add_user():
-    new_user = User()
-    new_user.username = request.json["new_user"]
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify(success=True)
+        new_user = User()
+        new_user.username = request.json["new_user"]
+        new_user.password = request.json["new_password"]
+        new_confirm = request.json["new_pass_confirm"]
+        db.session.add(new_user)
+
+        try:
+
+            if new_user.password != new_confirm:
+                passBool = False
+                registerBool = False
+                nameBool = True
+                
+            else:
+            
+                passBool = True
+                db.session.commit()
+                nameBool = True
+                registerBool = True
+                session['new_user'] = new_user.id
+                usernamesession = session['new_user']
+                
+        except IntegrityError as error:
+        
+            registerBool = False
+            nameBool = False
+        
+        return jsonify(regBool=registerBool, passwordBool=passBool, newNameBool = nameBool)
 
 @user_api.route('/newevent', methods=['POST'])
 def add_event():
@@ -54,11 +95,14 @@ def add_event():
         db.session.commit()
     return jsonify(success=True, event_id=new_event.id)
 
-@user_api.route('/deleteevent', methods=['DELETE'])
+@user_api.route('/deleteevent', methods=['POST'])
 def delete_event():
     event_id = request.json["event_id"]
-    to_delete = Event.query.filter_by(id=event_id).one()
-    db.session.delete(to_delete)
+    to_delete_event = Event.query.filter_by(id=event_id).first()
+    to_delete_invites = Invites.query.filter_by(event_id=event_id).all()
+    for invite in to_delete_invites:
+        db.session.delete(invite)
+    db.session.delete(to_delete_event)
     db.session.commit()
     return jsonify(success=True)
 
