@@ -95,8 +95,11 @@ def add_event():
 @user_api.route('/deleteevent', methods=['POST'])
 def delete_event():
     event_id = request.json["event_id"]
-    to_delete = Event.query.filter_by(id=event_id).one()
-    db.session.delete(to_delete)
+    to_delete_event = Event.query.filter_by(id=event_id).first()
+    to_delete_invites = Invites.query.filter_by(event_id=event_id).all()
+    for invite in to_delete_invites:
+        db.session.delete(invite)
+    db.session.delete(to_delete_event)
     db.session.commit()
     return jsonify(success=True)
 
