@@ -106,6 +106,14 @@ def delete_event():
     db.session.commit()
     return jsonify(success=True)
 
+@user_api.route('/user_login', methods=['POST'])
+def user_login():
+
+    entered_username = request.json["username_item"]
+    entered_password = request.json["password_item"]
+    login_info.append(entered_username)
+    login_info.append(entered_password)
+
 @user_api.route('/updateevent', methods=['PATCH'])
 def update_event():
     event_id = request.json["id"]
@@ -118,3 +126,53 @@ def update_event():
     target_event.drag = drag
     db.session.commit()
     return jsonify(success=True)
+
+@user_api.route('/verify_login', methods=['GET'])
+def verify_login():
+
+    test_query = db.session.query(User).filter(User.username==login_info[0], 
+    User.password==login_info[1]).scalar()
+
+    if test_query != None:
+        loginValid = True
+        session['test_query'] = test_query.id
+        usernamesession = session['test_query']
+        login_info.clear()
+    else:
+        loginValid = False
+        login_info.clear()
+
+    return jsonify({"loginbool": loginValid})
+
+@user_api.route('/checksession', methods=["GET"])
+def check_session():
+
+    if 'test_query' in session:
+
+        return jsonify(
+                session = True,
+                user = session['test_query'] 
+                )
+    elif 'new_user' in session:
+
+        return jsonify(
+                session = True,
+                user = session['new_user'] 
+                )
+
+    else:
+
+        return jsonify(session = False)
+
+@user_api.route("/logout", methods=["GET"])
+def logout():
+
+    if 'test_query' in session:
+        del session['test_query']
+
+        return jsonify(success=True)
+
+    else:
+        del session['new_user']
+
+        return jsonify(success=True)

@@ -58,6 +58,8 @@
 
 <script>
 import axios from 'axios'
+import login from './components/login.vue'
+import register from './components/register.vue'
 import calendarView from './components/calendarView.vue'
 import eventDetailsModal from './components/eventDetailsModal.vue'
 import addEventModal from './components/addEventModal.vue'
@@ -85,11 +87,14 @@ export default {
       sharedUsers: [], 
       newEventClickDate: '',
       showAddEventModal: false,
+      selectedEventId: '',
       eventInvites: '',
       dragEvent: false
     }        
   },
   components: {
+    login,
+    register,
     calendarView,
     eventDetailsModal,
     addEventModal,
