@@ -16,7 +16,9 @@ def serve_all_events():
     event_instances = db.session.query(Event).all()
     # do not change the %Y-%m-%d %H:%M:%S format of these times in the line
     #  below because this is being used in that format on the calendar ** PK
-    user_events = [{"id":event.id, "event_name": event.event_name, "details": event.details, "start_time": event.start_time.strftime("%Y-%m-%d %H:%M:%S"), "end_time":event.end_time.strftime("%Y-%m-%d %H:%M:%S"), "all_day": event.all_day, "owner_id":event.owner_id} for event in event_instances]
+    user_events = [{"id":event.id, "event_name": event.event_name, "details": event.details, "start_time": event.start_time.strftime("%Y-%m-%d %H:%M:%S"), "end_time":event.end_time.strftime("%Y-%m-%d %H:%M:%S"), "all_day": event.all_day, "owner_id":event.owner_id, "drag": event.drag} for event in event_instances]
+    event = [event.id for event in event_instances]
+    print(event)
     return jsonify({"all_events": user_events})
 
 @user_api.route('/getinvites', methods=['POST'])
@@ -43,6 +45,7 @@ def add_event():
     new_event.start_time = startTimeObject
     new_event.end_time = endTimeObject
     new_event.all_day = request.json["all_day"]
+    new_event.drag = request.json["drag"]
     new_event.event_name = request.json["event_name"]
     new_event.details = request.json["event_details"]
     new_event.owner_id = request.json["owner_id"]
@@ -56,5 +59,18 @@ def delete_event():
     event_id = request.json["event_id"]
     to_delete = Event.query.filter_by(id=event_id).one()
     db.session.delete(to_delete)
+    db.session.commit()
+    return jsonify(success=True)
+
+@user_api.route('/updateevent', methods=['PATCH'])
+def update_event():
+    event_id = request.json["id"]
+    start_time = datetime.strptime(request.json["start_time"], "%Y-%m-%d %H:%M:%S")
+    end_time = datetime.strptime(request.json["end_time"], "%Y-%m-%d %H:%M:%S")
+    drag = request.json["drag"]
+    target_event = db.session.query(Event).filter_by(id=event_id).first()
+    target_event.start_time = start_time
+    target_event.end_time = end_time
+    target_event.drag = drag
     db.session.commit()
     return jsonify(success=True)
