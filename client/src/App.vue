@@ -14,6 +14,7 @@
     <!-- <h2>My events</h2>
     <button @click="getEvents">Update my events</button>
     <br> -->
+    <!--does a modal for groups need to be enclosed within calendar_eventdetails div? -->
   <div class="calendar_eventdetails"> 
     <div style="width:100%;">
       <calendarView
@@ -49,8 +50,18 @@
       :allDay="newEventAllDay"
       />
     </div>
+    <!-- modal below won't pop up although displayGroups()executes in calendarView  -->
+    <div class="centeredModal">
+      <groupsModal
+        v-if="isGroupsModalVisible==true" 
+        @close="closeModal()"
+        
+      />
+    </div>
 
   </div>
+
+    
   </div>
   
   <div v-else-if="userRegistrationActive" >
@@ -70,6 +81,7 @@ import register from './components/register.vue'
 import calendarView from './components/calendarView.vue'
 import eventDetailsModal from './components/eventDetailsModal.vue'
 import addEventModal from './components/addEventModal.vue'
+import groupsModal from './components/groupsModal.vue'
 
 let moment = require('moment')
 
@@ -95,6 +107,7 @@ export default {
       newEventClickDate: '',
       showAddEventModal: false,
       eventInvites: '',
+      isGroupsModalVisible: false,
     }        
   },
   components: {
@@ -103,6 +116,7 @@ export default {
     calendarView,
     eventDetailsModal,
     addEventModal,
+    groupsModal,
   },
   methods: {
 
@@ -129,6 +143,10 @@ export default {
 
     register (value) {
      this.userRegistrationActive = value
+     
+    },
+    displayGroups () {
+     this.isGroupsModalVisible = true
      
     },
 
@@ -194,11 +212,7 @@ export default {
     clearEventList() {
       this.zippedEvent = []
     },
-    //use function below but don't break it
-    // perhaps if userLoggedIN === true getCurrentUserID()
-    //currentResponse is acquiring the correct ID but only
-    //at first login of user, not after refresh of browser, errors
-    //that it does get after first login I don't recognize
+    
 
     getCurrentUserID() {
       axios.get('/user')

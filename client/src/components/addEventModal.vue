@@ -7,6 +7,7 @@
             <section class="modal-body">
                 <slot name="body">
                     <h2>{{this.startDate}} : {{this.endDate}}</h2>
+                    <p>test</p>
                     <label>Event Name:</label>
                     <input v-model="eventName" v-on:keyup.enter="submitNewEvent"/>
                     <label>Event Details:</label>
@@ -14,6 +15,7 @@
                     <br>
                     <label>Invite Friends:</label>
                     <input-tags v-model="emails">
+                  
                     <div class="emails-input"
                         slot-scope="{tag,removeTag,inputEventHandlers,inputBindings }">
                         <div v-for="(email, index) in emails"
@@ -100,7 +102,7 @@ export default {
                 this.failedEntry = true
                 return
             }
-
+           
             axios.post('/newevent', { owner_id: this.userID, event_name: this.eventName, event_details: this.eventDetails, event_start_time: this.startTime, event_end_time: this.endTime, all_day: this.allDay})
             .then((response) => {
                 this.eventName = ''

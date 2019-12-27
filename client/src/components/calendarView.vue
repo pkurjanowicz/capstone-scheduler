@@ -6,6 +6,7 @@
     <div class='demo-app-top'>
       <button class="button" @click="toggleWeekends">toggle weekends</button>
       <button class="button" @click="gotoPast">go to a date in the past</button>
+      <button class="button" @click="displayGroups();">your groups</button>
       (also, click a date/time to add an event)
     </div>
     <FullCalendar
@@ -60,7 +61,9 @@ export default {
       newEventClickDate: '',
       selectStartDate: '',
       selectEndDate: '',
-      selectAllDay: false
+      selectAllDay: false,
+      isGroupsModalVisible: false,
+      
     }
   },
   methods: {
@@ -96,9 +99,17 @@ export default {
       this.selectAllDay = info.allDay;
       this.$emit('select', this.selectStartDate, this.selectEndDate, this.selectAllDay);
     },
+    
     eventRender(info) {
     // {description: "Lecture", department: "BioChemistry"}
-  }
+    },
+    displayGroups() {
+      console.log("displayGroups")
+      this.isGroupsModalVisible = true;
+      this.$emit('displayGroups', this.isGroupsModalVisible);
+
+    
+    }
   }
 }
 
