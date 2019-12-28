@@ -22,6 +22,7 @@
       @eventClick='eventClick'
       @dateClick='dateClick'
       @select='select'
+      @displayGroups='displayGroups'
       />
     </div>
     <div class="centeredModal">
@@ -199,6 +200,7 @@ export default {
     closeModal() {
       this.isModalVisible = false;
       this.showAddEventModal = false;
+      this.isGroupsModalVisible = false;
     },
     deleteEvent(id) {
       // There is currently an issue with the delete button failing to remove list items sometimes.
