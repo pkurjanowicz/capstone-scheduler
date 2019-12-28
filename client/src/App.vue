@@ -51,7 +51,7 @@
       :allDay="newEventAllDay"
       />
     </div>
-    <!-- modal below won't pop up although displayGroups()executes in calendarView  -->
+    <!-- this note is to test newest version of groupsbranch  -->
     <div class="centeredModal">
       <groupsModal
         v-if="isGroupsModalVisible==true" 
