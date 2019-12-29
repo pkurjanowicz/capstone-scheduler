@@ -55,6 +55,7 @@
     <div class="centeredModal">
       <groupsModal
         v-if="isGroupsModalVisible==true" 
+        :userID='currentUserID'
         @close="closeModal()"
         
       />
@@ -109,6 +110,7 @@ export default {
       showAddEventModal: false,
       eventInvites: '',
       isGroupsModalVisible: false,
+      currentGroupId: '',
     }        
   },
   components: {

@@ -21,3 +21,9 @@ class Invites(db.Model):
     invitee_email = db.Column(db.String(500))
     accepted = db.Column(db.Boolean, default=False)
     event_id = db.Column(db.Integer, db.ForeignKey("event.id"))
+
+class Groups(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    group_name = db.Column(db.String(500))
+    group_emails = db.Column(db.String(500))
+    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))

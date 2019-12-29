@@ -1,6 +1,6 @@
 from flask import Flask, Blueprint, jsonify, request, redirect, session
 from db_instance import db
-from models import User, Event, Invites
+from models import User, Event, Invites, Groups
 from datetime import datetime
 import os
 import flask
@@ -156,4 +156,19 @@ def logout():
         del session['new_user']
 
         return jsonify(success=True)
+
+@user_api.route('/newgroup', methods=['POST'])
+def add_group():
+
+    new_group = Groups()
+
+    new_group.group_name = request.json["group_name"]
+    new_group.owner_id = request.json["owner_id"]
+    print("owner_id line 167"   + new_group.owner_id)
+    if new_group.group_name != "" and new_group.owner_id != "":
+        print("line 169")
+        db.session.add(new_group)
+        db.session.commit()
+
+    return jsonify(success=True, group_id=new_group.id)
 

@@ -7,7 +7,6 @@
             <section class="modal-body">
                 <slot name="body">
                     <h2>{{this.startDate}} : {{this.endDate}}</h2>
-                    <p>test</p>
                     <label>Event Name:</label>
                     <input v-model="eventName" v-on:keyup.enter="submitNewEvent"/>
                     <label>Event Details:</label>
@@ -81,7 +80,7 @@ export default {
             this.$emit('close');
         },
         submitNewEvent() {
-            console.log("emails line 82"   + this.emails)
+            
             this.clearEvents()
             this.failedEntry = false
 

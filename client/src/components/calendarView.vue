@@ -104,7 +104,6 @@ export default {
     // {description: "Lecture", department: "BioChemistry"}
     },
     displayGroups() {
-      console.log("displayGroups")
       this.isGroupsModalVisible = true;
       this.$emit('displayGroups', this.isGroupsModalVisible);
 
