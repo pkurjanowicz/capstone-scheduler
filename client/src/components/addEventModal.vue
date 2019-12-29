@@ -67,7 +67,8 @@ export default {
             range: [],
             startTime: this.startDate,
             endTime: this.endDate,
-            failedEntry: false
+            failedEntry: false,
+            dragEvent: false
         }
     },
     components: {
@@ -81,6 +82,7 @@ export default {
         submitNewEvent() {
             this.clearEvents()
             this.failedEntry = false
+            this.dragEvent = false
 
             // Selects start and end times depending on if range is selected or not.
             // this.setStartTime()
@@ -100,7 +102,7 @@ export default {
                 return
             }
 
-            axios.post('/newevent', { owner_id: this.userID, event_name: this.eventName, event_details: this.eventDetails, event_start_time: this.startTime, event_end_time: this.endTime, all_day: this.allDay})
+            axios.post('/newevent', { owner_id: this.userID, event_name: this.eventName, event_details: this.eventDetails, event_start_time: this.startTime, event_end_time: this.endTime, all_day: this.allDay, drag: this.dragEvent})
             .then((response) => {
                 this.eventName = ''
                 this.eventDetails = ''
@@ -108,6 +110,7 @@ export default {
                 this.range = ''
                 this.endTime = ''
                 this.all_day = false
+                this.dragEvent = false
                 this.eventsList()
                 this.currentEventId = response.data.event_id
                 this.sendInviteEmails()
