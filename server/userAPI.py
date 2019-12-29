@@ -20,8 +20,6 @@ def serve_all_users():
         user_usernames = session['test_query']
     except KeyError:
         user_usernames = session['new_user']
-        print("usernames line 30    " + str(user_usernames))
-    
     
     return jsonify({"usernames": user_usernames})
 
@@ -38,7 +36,7 @@ def get_invites():
     event_id = request.json["event_id"]
     event_invites = Invites.query.filter_by(event_id=event_id).all()
     event_invites_array = [{'email':event_invite.invitee_email, 'accepted': event_invite.accepted} for event_invite in event_invites]
-    print("eventinvitesarray line 41    " + str(event_invites_array))
+    
     return jsonify({'all_invites': event_invites_array})
 
 @user_api.route('/usersignup', methods=['POST'])
@@ -163,10 +161,10 @@ def add_group():
     new_group = Groups()
 
     new_group.group_name = request.json["group_name"]
+    emails = request.json["emails"]
+    print("emails line 165    " + str(emails))
     new_group.owner_id = request.json["owner_id"]
-    print("owner_id line 167"   + new_group.owner_id)
     if new_group.group_name != "" and new_group.owner_id != "":
-        print("line 169")
         db.session.add(new_group)
         db.session.commit()
 

@@ -59,7 +59,7 @@ export default {
         return{
             userID: '',
             emails: [],
-            timeCheckbox: false,  
+            timeCheckbox: false, 
             eventName: '',
             eventDetails: '',
             eventID: '',
@@ -104,6 +104,7 @@ export default {
            
             axios.post('/newevent', { owner_id: this.userID, event_name: this.eventName, event_details: this.eventDetails, event_start_time: this.startTime, event_end_time: this.endTime, all_day: this.allDay})
             .then((response) => {
+                
                 this.eventName = ''
                 this.eventDetails = ''
                 this.startTime = ''
