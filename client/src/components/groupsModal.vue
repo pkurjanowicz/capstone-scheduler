@@ -10,16 +10,32 @@
                 <input v-model="groupName" v-on:keyup.enter="submitNewGroup"/>
                 <br>
                 <label>Create your group with emails:</label>
-                <input v-model="emails" separator="," maximum="5" 
-                placeholder="Just enter some emails separated by a comma">
-                <br>
-                <button class="submit" @click="submitNewGroup">Submit</button>
-                <!--
-                <div>
-                <p v-for="(email, index) in emails" v-bind:key="index">{{ email }}</p>
-                
-                </div>
-                -->
+                <input-tags v-model="emails">
+                  
+                    <div class="emails-input"
+                        slot-scope="{tag,removeTag,inputEventHandlers,inputBindings }">
+                        <div v-for="(email, index) in emails"
+                        :key='index'
+                        class="tags-input-email">
+                        <span>{{ email }}</span>
+                        <button type="button" class="tags-input-remove"
+                            v-on:click="removeTag(email)"
+                        >&times;
+                        </button>
+                        </div>
+                        <input
+                        class="email-input-text"  placeholder="Add invitee email..."
+                        v-on="inputEventHandlers"
+                        v-bind="inputBindings"
+                        >
+                        <br>
+                        <button class="submit" @click="submitNewGroup">Submit</button>
+                    </div>
+                    
+                    </input-tags>
+                    
+                    
+                    
                 </slot>
             </section>
         </div>
@@ -46,17 +62,9 @@ export default {
     components: {
         VueTags
     },
-    props: ['userID', 'groupName', 'value', 'separator', 'tags'],
+    props: ['userID', 'groupName', 'value'],
     methods: {
-        submitNewGroup(tags, separator) {
-
-            for (let tag of tags) {
-                this.emails.push(tag + separator);
-            }
-
-            this.emails.join(" ").slice(0, -1);
-
-
+        submitNewGroup() {
             
             axios.post('/newgroup', { owner_id: this.userID, group_name: this.groupName, emails: this.emails })
             .then((response) => {
