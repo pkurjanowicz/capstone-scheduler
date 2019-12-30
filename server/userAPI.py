@@ -55,14 +55,12 @@ def add_user():
         db.session.add(new_user)
 
         try:
-
             if new_user.password != new_confirm:
                 passBool = False
                 registerBool = False
                 nameBool = True
                 
-            else:
-            
+            else: 
                 passBool = True
                 db.session.commit()
                 nameBool = True
@@ -71,7 +69,6 @@ def add_user():
                 usernamesession = session['new_user']
                 
         except IntegrityError as error:
-        
             registerBool = False
             nameBool = False
         
@@ -132,7 +129,6 @@ def verify_login():
 
     test_query = db.session.query(User).filter(User.username==login_info[0], 
     User.password==login_info[1]).scalar()
-
     if test_query != None:
         loginValid = True
         session['test_query'] = test_query.id
@@ -146,7 +142,6 @@ def verify_login():
 
 @user_api.route('/checksession', methods=["GET"])
 def check_session():
-
     if 'test_query' in session:
 
         return jsonify(
@@ -154,14 +149,11 @@ def check_session():
                 user = session['test_query'] 
                 )
     elif 'new_user' in session:
-
         return jsonify(
                 session = True,
                 user = session['new_user'] 
                 )
-
     else:
-
         return jsonify(session = False)
 
 @user_api.route("/logout", methods=["GET"])
