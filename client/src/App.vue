@@ -56,6 +56,7 @@
       <groupsModal
         v-if="isGroupsModalVisible==true" 
         :userID='currentUserID'
+        :groupName='userGroups'
         @close="closeModal()"
         
       />
@@ -99,6 +100,7 @@ export default {
       inputUserName: '',
       currentUserID: '',
       currentUser: '',
+      userGroups: '',
       eventResponseNames: [],
       eventResponseDetails: [],
       eventResponseStartTime: [],
@@ -150,6 +152,7 @@ export default {
     },
     displayGroups () {
      this.isGroupsModalVisible = true
+     this.getUserGroups();
      
     },
 
@@ -224,6 +227,16 @@ export default {
         //no console log here at first registration
         this.currentUserID = response.data.usernames
         console.log("currentuserid line    "   + this.currentUserID)
+        
+      })
+    },
+
+    getUserGroups() {
+      axios.get('/groups')
+      .then((response) => {
+        //no console log here at first registration
+        this.userGroups = response.data.usergroups
+        console.log("userGroups line  238  "   + this.userGroups)
         
       })
     },

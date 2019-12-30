@@ -6,33 +6,18 @@
             </header>
             <section class="modal-body">
                 <slot name="body">
+                <p>{{ groupName }}</p>
                 <label>Group Name:</label>
                 <input v-model="groupName" v-on:keyup.enter="submitNewGroup"/>
                 <br>
                 <label>Create your group with emails:</label>
-                <input-tags v-model="emails">
-                  
-                    <div class="emails-input"
-                        slot-scope="{tag,removeTag,inputEventHandlers,inputBindings }">
-                        <div v-for="(email, index) in emails"
-                        :key='index'
-                        class="tags-input-email">
-                        <span>{{ email }}</span>
-                        <button type="button" class="tags-input-remove"
-                            v-on:click="removeTag(email)"
-                        >&times;
-                        </button>
-                        </div>
-                        <input
-                        class="email-input-text"  placeholder="Add invitee email..."
-                        v-on="inputEventHandlers"
-                        v-bind="inputBindings"
-                        >
-                        <br>
-                        <button class="submit" @click="submitNewGroup">Submit</button>
-                    </div>
+                <input v-model="groupEmails" v-on:keyup.enter="submitNewGroup"/>
+                
+                <br>
+                <button class="submit" @click="submitNewGroup">Submit</button>
+                
                     
-                    </input-tags>
+                    
                     
                     
                     
@@ -55,6 +40,7 @@ export default {
             userID: '',
             emails: [],
             groupName: '',
+            groupEmails: '',
             
         }
 
@@ -65,6 +51,23 @@ export default {
     props: ['userID', 'groupName', 'value'],
     methods: {
         submitNewGroup() {
+
+            let previousIndex = 0; 
+            let i = 0;
+            let separated = '';
+ 
+            for(i = 0; i < this.groupEmails.length; i++) { 
+ 
+                if (this.groupEmails[i] == ', ') { 
+    
+                separated = this.groupEmails.slice(previousIndex, i); 
+                this.emails.push(separated); 
+                previousIndex = i + 1; 
+                } 
+            } 
+ 
+            this.emails.push(this.groupEmails.slice(previousIndex, i)); 
+
             
             axios.post('/newgroup', { owner_id: this.userID, group_name: this.groupName, emails: this.emails })
             .then((response) => {

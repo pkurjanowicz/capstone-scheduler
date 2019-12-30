@@ -23,6 +23,15 @@ def serve_all_users():
     
     return jsonify({"usernames": user_usernames})
 
+@user_api.route('/groups', methods=['GET'])
+def serve_all_groups():
+   
+    group_instances = db.session.query(Groups).all()
+
+    user_groups = [{"groupName":group.group_name, "groupemails":group.group_emails} for group in group_instances]
+    
+    return jsonify({"usergroups": user_groups})
+
 @user_api.route('/getevents', methods=['GET'])
 def serve_all_events():
     event_instances = db.session.query(Event).all()
@@ -165,6 +174,7 @@ def add_group():
     print("emails line 165    " + str(emails))
     new_group.owner_id = request.json["owner_id"]
     if new_group.group_name != "" and new_group.owner_id != "":
+        print("line 168 userAPI")
         db.session.add(new_group)
         db.session.commit()
 
