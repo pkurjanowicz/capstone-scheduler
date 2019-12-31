@@ -12,6 +12,7 @@
       @eventClick='eventClick'
       @dateClick='dateClick'
       @select='select'
+      @eventDrop='eventDrop'
       />
     </div>
     <div class="centeredModal">
@@ -86,8 +87,9 @@ export default {
       sharedUsers: [], 
       newEventClickDate: '',
       showAddEventModal: false,
-      eventInvites: '',
       selectedEventId: '',
+      eventInvites: '',
+      dragEvent: false
     }        
   },
   components: {
@@ -161,7 +163,6 @@ export default {
         event_id: id
       }).then(resp => {
         this.eventInvites = resp.data.all_invites
-        console.log(this.eventInvites)
       })
     },
     dateClick(date){
@@ -174,6 +175,23 @@ export default {
       this.newEventEndDate = end;
       this.showAddEventModal = true;
       this.newEventAllDay = fullDay;
+    },
+    eventDrop(dragID, dragStart, dragEnd){
+      // Sets start time to UTC
+      let dragEventStartDate = moment.utc(dragStart)
+      dragStart = dragEventStartDate.toISOString()
+      dragStart = dragEventStartDate.format("YYYY-MM-DD HH:mm:ss")
+
+      // Sets end time to UTC.
+      let dragEventEndDate = moment.utc(dragEnd)
+      dragEnd = dragEventEndDate.toISOString()
+      dragEnd = dragEventEndDate.format("YYYY-MM-DD HH:mm:ss")
+      this.dragEvent = true;
+
+      axios.patch('/updateevent', { id: dragID, start_time: dragStart, end_time: dragEnd, drag: this.dragEvent})
+      .then(() => {
+        this.getEvents()
+      });
     },
     closeModal() {
       this.isModalVisible = false;
@@ -249,25 +267,30 @@ export default {
         for (let i = 0; i < this.eventResponseNames.length; i++) {
           //if the event is all day keep the time in utc, otherwise it will change the start time to the previous day **KS
           let stringConvertStartTime = this.eventResponseStartTime[i].start_time
-          if (this.eventResponseStartTime[i].all_day == false){
-            stringConvertStartTime = this.utcToLocalTime(stringConvertStartTime);
-          }
           let stringConvertEndTime = this.eventResponseEndTime[i].end_time
-          if (this.eventResponseStartTime[i].all_day == false){
+          if (!this.eventResponseStartTime[i].drag) {
+            if (this.eventResponseStartTime[i].all_day == false){
+              stringConvertStartTime = this.utcToLocalTime(stringConvertStartTime);
+              stringConvertEndTime = this.utcToLocalTime(stringConvertEndTime);
+            } 
+          } else {
+            stringConvertStartTime = this.utcToLocalTime(stringConvertStartTime);
             stringConvertEndTime = this.utcToLocalTime(stringConvertEndTime);
-          }
+          }     
+             
           //the zipped event must be in this format in order for calendarview to display it(as an object) **PK
           
           this.zippedEvent.push({
             title: this.eventResponseNames[i].event_name, 
             start: stringConvertStartTime,
             end: stringConvertEndTime,
+            id: currentResponse[i].id,
             extendedProps: {
               title: this.eventResponseNames[i].event_name,
               description: this.eventResponseDetails[i].details,
               start: stringConvertStartTime,
               end: stringConvertEndTime, 
-              id: this.eventResponseID[i].id,
+              id: currentResponse[i].id,
             },
             })
             //  ** PK
