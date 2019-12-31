@@ -28,8 +28,8 @@ def serve_all_groups():
    
     group_instances = db.session.query(Groups).all()
 
-    user_groups = [{"groupName":group.group_name, "groupemails":group.group_emails} for group in group_instances]
-    
+    user_groups = [{"group_name":group.group_name, "groupemails":group.group_emails, "owner_id":group.owner_id} for group in group_instances]
+    print("user_groups line 32     " + str(user_groups))
     return jsonify({"usergroups": user_groups})
 
 @user_api.route('/getevents', methods=['GET'])

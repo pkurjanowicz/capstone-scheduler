@@ -6,7 +6,9 @@
             </header>
             <section class="modal-body">
                 <slot name="body">
-                <p>{{ groupName }}</p>
+                <div>
+                <p>{{ groupTitle }}</p>
+                </div>
                 <label>Group Name:</label>
                 <input v-model="groupName" v-on:keyup.enter="submitNewGroup"/>
                 <br>
@@ -48,7 +50,7 @@ export default {
     components: {
         VueTags
     },
-    props: ['userID', 'groupName', 'value'],
+    props: ['userID', 'groupTitle', 'value'],
     methods: {
         submitNewGroup() {
 

@@ -54,9 +54,10 @@
     <!-- this note is to test newest version of groupsbranch  -->
     <div class="centeredModal">
       <groupsModal
+        :groupDetails='zippedGroup'
         v-if="isGroupsModalVisible==true" 
         :userID='currentUserID'
-        :groupName='userGroups'
+        :groupTitle='groupClickTitle'
         @close="closeModal()"
         
       />
@@ -101,18 +102,21 @@ export default {
       currentUserID: '',
       currentUser: '',
       userGroups: '',
+      userGroupsNames: [],
       eventResponseNames: [],
       eventResponseDetails: [],
       eventResponseStartTime: [],
       eventResponseEndTime: [],
       eventResponseID: [],
       zippedEvent: [],
+      zippedGroup: [],
       sharedUsers: [], 
       newEventClickDate: '',
       showAddEventModal: false,
       eventInvites: '',
       isGroupsModalVisible: false,
       currentGroupId: '',
+      
     }        
   },
   components: {
@@ -150,8 +154,10 @@ export default {
      this.userRegistrationActive = value
      
     },
-    displayGroups () {
+    displayGroups (groupTitle) {
      this.isGroupsModalVisible = true
+     this.groupClickTitle = groupTitle
+     this.getCurrentUserID();
      this.getUserGroups();
      
     },
@@ -232,12 +238,34 @@ export default {
     },
 
     getUserGroups() {
+      
       axios.get('/groups')
       .then((response) => {
-        //no console log here at first registration
-        this.userGroups = response.data.usergroups
-        console.log("userGroups line  238  "   + this.userGroups)
         
+        let userGroupsResponse = response.data.usergroups
+        console.log("usergroupsresponse     " + userGroupsResponse)
+        console.log("userID line 244    "    + this.currentUserID)
+       
+        for (let i = 0; i < userGroupsResponse.length; i++) {
+          if (this.currentUserID === userGroupsResponse[i].owner_id) {
+            console.log("ownerid line 248    " + userGroupsResponse[i].owner_id)
+            console.log("group_name line 249    " + userGroupsResponse[i].group_name)
+            /*
+            this.userGroupsNames.push(userGroupsResponse[i])
+            */
+              this.zippedGroup.push({
+                groupTitle: userGroupsResponse[i].group_name, 
+            
+              extendedProps: {
+                groupTitle: userGroupsResponse[i].group_name,
+                
+                
+              },
+                
+              })
+          }
+        }
+         
       })
     },
     submitNewUsername() {
