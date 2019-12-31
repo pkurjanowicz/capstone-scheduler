@@ -13,6 +13,7 @@
       @dateClick='dateClick'
       @select='select'
       @eventDrop='eventDrop'
+      @eventResize='eventResize'
       />
     </div>
     <div class="centeredModal">
@@ -189,6 +190,22 @@ export default {
       this.dragEvent = true;
 
       axios.patch('/updateevent', { id: dragID, start_time: dragStart, end_time: dragEnd, drag: this.dragEvent})
+      .then(() => {
+        this.getEvents()
+      });
+    },
+    eventResize(resizeID, resizeStart, resizeEnd){
+      // Sets start time to UTC
+      let resizeEventStartDate = moment.utc(resizeStart)
+      resizeStart = resizeEventStartDate.toISOString()
+      resizeStart = resizeEventStartDate.format("YYYY-MM-DD HH:mm:ss")
+
+      // Sets end time to UTC.
+      let resizeEventEndDate = moment.utc(resizeEnd)
+      resizeEnd = resizeEventEndDate.toISOString()
+      resizeEnd = resizeEventEndDate.format("YYYY-MM-DD HH:mm:ss");
+
+      axios.patch('/updateevent', { id: resizeID, start_time: resizeStart, end_time: resizeEnd, drag: false})
       .then(() => {
         this.getEvents()
       });
