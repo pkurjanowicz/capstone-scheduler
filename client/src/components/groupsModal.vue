@@ -37,6 +37,7 @@ let moment = require('moment')
 
 export default {
     name: "groupsModal",
+    props: ['userID', 'groupTitle', 'value'],
     data() {
         return {
             userID: '',
@@ -50,7 +51,7 @@ export default {
     components: {
         VueTags
     },
-    props: ['userID', 'groupTitle', 'value'],
+    
     methods: {
         submitNewGroup() {
 

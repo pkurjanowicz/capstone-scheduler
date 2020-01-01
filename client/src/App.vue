@@ -22,7 +22,7 @@
       @eventClick='eventClick'
       @dateClick='dateClick'
       @select='select'
-      @displayGroups='displayGroups'
+      @getUserGroups='getUserGroups'
       />
     </div>
     <div class="centeredModal">
@@ -155,10 +155,9 @@ export default {
      
     },
     displayGroups (groupTitle) {
-     this.isGroupsModalVisible = true
+     console.log("displayGroups executes")
      this.groupClickTitle = groupTitle
-     this.getCurrentUserID();
-     this.getUserGroups();
+     
      
     },
 
@@ -182,6 +181,7 @@ export default {
   },
  
     eventClick(title, description, start, end, id) {
+      
       this.eventClickTitle = title
       this.eventClickDescription = description
       this.eventClickStart = start
@@ -238,7 +238,8 @@ export default {
     },
 
     getUserGroups() {
-      
+      this.isGroupsModalVisible = true
+      this.getCurrentUserID()
       axios.get('/groups')
       .then((response) => {
         
@@ -251,13 +252,16 @@ export default {
             console.log("ownerid line 248    " + userGroupsResponse[i].owner_id)
             console.log("group_name line 249    " + userGroupsResponse[i].group_name)
             /*
-            this.userGroupsNames.push(userGroupsResponse[i])
+            what is zipped all about? the answer to that calendarEvents which takes
+            the program to calendarView, but that isn't necessarily something for the 
+            groups function to follow, which raises question of validity of code below
             */
               this.zippedGroup.push({
                 groupTitle: userGroupsResponse[i].group_name, 
             
-              extendedProps: {
+                extendedProps: {
                 groupTitle: userGroupsResponse[i].group_name,
+                
                 
                 
               },
@@ -265,8 +269,10 @@ export default {
               })
           }
         }
-         
+      
+
       })
+    this.displayGroups(); 
     },
     submitNewUsername() {
       // I believe there is a race condition somewhere that sometimes prevents the list of events from updating on the webpage.
@@ -295,6 +301,7 @@ export default {
       this.clearEventList()
     },
     getEvents() {
+      console.log("getEvents line 300")
       this.clearEventList()
       axios.get('/getevents')
       .then((response) => {
