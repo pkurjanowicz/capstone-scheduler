@@ -7,7 +7,7 @@
             <section class="modal-body">
                 <slot name="body">
                 <div>
-                <p>{{ groupTitle }}</p>
+                <p>{{ groupTitles }}</p>
                 </div>
                 <label>Group Name:</label>
                 <input v-model="groupName" v-on:keyup.enter="submitNewGroup"/>
@@ -37,7 +37,7 @@ let moment = require('moment')
 
 export default {
     name: "groupsModal",
-    props: ['userID', 'groupTitle', 'value'],
+    props: ['userID', 'groupTitles', 'value'],
     data() {
         return {
             userID: '',

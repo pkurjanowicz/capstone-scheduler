@@ -54,10 +54,9 @@
     <!-- this note is to test newest version of groupsbranch  -->
     <div class="centeredModal">
       <groupsModal
-        :groupDetails='zippedGroup'
         v-if="isGroupsModalVisible==true" 
         :userID='currentUserID'
-        :groupTitle='groupClickTitle'
+        :groupTitles='groupTitlesArray'
         @close="closeModal()"
         
       />
@@ -102,7 +101,6 @@ export default {
       currentUserID: '',
       currentUser: '',
       userGroups: '',
-      userGroupsNames: [],
       eventResponseNames: [],
       eventResponseDetails: [],
       eventResponseStartTime: [],
@@ -115,7 +113,8 @@ export default {
       showAddEventModal: false,
       eventInvites: '',
       isGroupsModalVisible: false,
-      currentGroupId: '',
+      groupTitlesArray: [],
+      
       
     }        
   },
@@ -152,12 +151,6 @@ export default {
 
     register (value) {
      this.userRegistrationActive = value
-     
-    },
-    displayGroups (groupTitle) {
-     console.log("displayGroups executes")
-     this.groupClickTitle = groupTitle
-     
      
     },
 
@@ -230,9 +223,9 @@ export default {
     getCurrentUserID() {
       axios.get('/user')
       .then((response) => {
-        //no console log here at first registration
+        
         this.currentUserID = response.data.usernames
-        console.log("currentuserid line    "   + this.currentUserID)
+        
         
       })
     },
@@ -244,35 +237,18 @@ export default {
       .then((response) => {
         
         let userGroupsResponse = response.data.usergroups
-        console.log("usergroupsresponse     " + userGroupsResponse)
-        console.log("userID line 244    "    + this.currentUserID)
-       
+        
         for (let i = 0; i < userGroupsResponse.length; i++) {
           if (this.currentUserID === userGroupsResponse[i].owner_id) {
-            console.log("ownerid line 248    " + userGroupsResponse[i].owner_id)
-            console.log("group_name line 249    " + userGroupsResponse[i].group_name)
-            /*
-            what is zipped all about? the answer to that calendarEvents which takes
-            the program to calendarView, but that isn't necessarily something for the 
-            groups function to follow, which raises question of validity of code below
-            */
-              this.zippedGroup.push({
-                groupTitle: userGroupsResponse[i].group_name, 
-            
-                extendedProps: {
-                groupTitle: userGroupsResponse[i].group_name,
-                
-                
-                
-              },
-                
-              })
+
+            this.groupTitlesArray.push(userGroupsResponse[i].group_name)
+           
           }
         }
       
 
       })
-    this.displayGroups(); 
+    
     },
     submitNewUsername() {
       // I believe there is a race condition somewhere that sometimes prevents the list of events from updating on the webpage.
@@ -301,7 +277,7 @@ export default {
       this.clearEventList()
     },
     getEvents() {
-      console.log("getEvents line 300")
+      
       this.clearEventList()
       axios.get('/getevents')
       .then((response) => {
