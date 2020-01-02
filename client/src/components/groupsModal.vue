@@ -7,15 +7,20 @@
             <section class="modal-body">
                 <slot name="body">
                 <div>
+                <h2>Your Groups:</h2>
+                <br>
                 <ul>
                 <li v-for="items in groupInfo" v-bind:key="items">{{ items }}</li>
                 </ul>
                 </div>
+                <h2>Create a New Group Below:</h2>
+                <br>
                 <label>Group Name:</label>
                 <input v-model="groupName" v-on:keyup.enter="submitNewGroup"/>
                 <br>
-                <label>Create your group with emails:</label>
-                <input v-model="groupEmails" v-on:keyup.enter="submitNewGroup"/>
+                <label>Group emails:</label>
+                <input v-model="groupEmails" v-on:keyup.enter="submitNewGroup" 
+                placeholder="Add comma separated emails..."/>
                 
                 <br>
                 <button class="submit" @click="submitNewGroup">Submit</button>

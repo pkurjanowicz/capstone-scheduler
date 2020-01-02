@@ -240,11 +240,12 @@ export default {
         
         for (let i = 0; i < userGroupsResponse.length; i++) {
           if (this.currentUserID === userGroupsResponse[i].owner_id) {
-            console.log("group_emails line 243    " + userGroupsResponse[i].group_emails)
-            this.groupInfoArray.push(userGroupsResponse[i].group_name)
-            this.groupInfoArray.push(userGroupsResponse[i].group_emails)
-            
-           
+
+            let groupInfoString = userGroupsResponse[i].group_name + 
+            "   " + userGroupsResponse[i].group_emails
+
+            this.groupInfoArray.push(groupInfoString)
+                 
           }
         }
       

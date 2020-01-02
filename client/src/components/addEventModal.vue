@@ -12,7 +12,7 @@
                     <label>Event Details:</label>
                     <textarea v-model="eventDetails" v-on:keyup.enter="submitNewEvent"/>
                     <br>
-                    <label>Invite Friends:</label>
+                    <label>Invite Friends and/or Groups:</label>
                     <input-tags v-model="emails">
                   
                     <div class="emails-input"
@@ -27,7 +27,7 @@
                         </button>
                         </div>
                         <input
-                        class="email-input-text"  placeholder="Add invitee email..."
+                        class="email-input-text"  placeholder="Add invitee email and/or group name..."
                         v-on="inputEventHandlers"
                         v-bind="inputBindings"
                         >
