@@ -51,12 +51,12 @@
       :allDay="newEventAllDay"
       />
     </div>
-    <!-- this note is to test newest version of groupsbranch  -->
+    
     <div class="centeredModal">
       <groupsModal
         v-if="isGroupsModalVisible==true" 
         :userID='currentUserID'
-        :groupTitles='groupTitlesArray'
+        :groupInfo='groupInfoArray'
         @close="closeModal()"
         
       />
@@ -113,7 +113,7 @@ export default {
       showAddEventModal: false,
       eventInvites: '',
       isGroupsModalVisible: false,
-      groupTitlesArray: [],
+      groupInfoArray: [],
       
       
     }        
@@ -240,8 +240,10 @@ export default {
         
         for (let i = 0; i < userGroupsResponse.length; i++) {
           if (this.currentUserID === userGroupsResponse[i].owner_id) {
-
-            this.groupTitlesArray.push(userGroupsResponse[i].group_name)
+            console.log("group_emails line 243    " + userGroupsResponse[i].group_emails)
+            this.groupInfoArray.push(userGroupsResponse[i].group_name)
+            this.groupInfoArray.push(userGroupsResponse[i].group_emails)
+            
            
           }
         }

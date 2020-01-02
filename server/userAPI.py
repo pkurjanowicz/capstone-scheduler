@@ -28,7 +28,7 @@ def serve_all_groups():
    
     group_instances = db.session.query(Groups).all()
 
-    user_groups = [{"group_name":group.group_name, "groupemails":group.group_emails, "owner_id":group.owner_id} for group in group_instances]
+    user_groups = [{"group_name":group.group_name, "group_emails":group.group_emails, "owner_id":group.owner_id} for group in group_instances]
     print("user_groups line 32     " + str(user_groups))
     return jsonify({"usergroups": user_groups})
 
@@ -170,11 +170,9 @@ def add_group():
     new_group = Groups()
 
     new_group.group_name = request.json["group_name"]
-    emails = request.json["emails"]
-    print("emails line 165    " + str(emails))
+    new_group.group_emails = request.json["emails"]
     new_group.owner_id = request.json["owner_id"]
     if new_group.group_name != "" and new_group.owner_id != "":
-        print("line 168 userAPI")
         db.session.add(new_group)
         db.session.commit()
 

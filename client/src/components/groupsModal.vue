@@ -7,7 +7,9 @@
             <section class="modal-body">
                 <slot name="body">
                 <div>
-                <p>{{ groupTitles }}</p>
+                <ul>
+                <li v-for="items in groupInfo" v-bind:key="items">{{ items }}</li>
+                </ul>
                 </div>
                 <label>Group Name:</label>
                 <input v-model="groupName" v-on:keyup.enter="submitNewGroup"/>
@@ -37,11 +39,10 @@ let moment = require('moment')
 
 export default {
     name: "groupsModal",
-    props: ['userID', 'groupTitles', 'value'],
+    props: ['userID', 'groupInfo', 'value'],
     data() {
         return {
             userID: '',
-            emails: [],
             groupName: '',
             groupEmails: '',
             
@@ -55,27 +56,11 @@ export default {
     methods: {
         submitNewGroup() {
 
-            let previousIndex = 0; 
-            let i = 0;
-            let separated = '';
- 
-            for(i = 0; i < this.groupEmails.length; i++) { 
- 
-                if (this.groupEmails[i] == ', ') { 
-    
-                separated = this.groupEmails.slice(previousIndex, i); 
-                this.emails.push(separated); 
-                previousIndex = i + 1; 
-                } 
-            } 
- 
-            this.emails.push(this.groupEmails.slice(previousIndex, i)); 
-
-            
-            axios.post('/newgroup', { owner_id: this.userID, group_name: this.groupName, emails: this.emails })
+            this.groupEmails.replace(',', '');
+            axios.post('/newgroup', { owner_id: this.userID, group_name: this.groupName, emails: this.groupEmails })
             .then((response) => {
                 this.groupName = ''
-                this.emails = ''
+                this.groupEmails = ''
                 this.currentGroupId = response.data.group_id
                 this.close()
                 
