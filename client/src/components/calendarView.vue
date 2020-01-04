@@ -6,7 +6,7 @@
     <div class='demo-app-top'>
       <button class="button" @click="toggleWeekends">toggle weekends</button>
       <button class="button" @click="gotoPast">go to a date in the past</button>
-      <button class="button" @click="getUserGroups();">your groups</button>
+      <button class="button" @click="displayGroups();">your groups</button>
       (also, click a date/time to add an event)
     </div>
     <FullCalendar
@@ -103,9 +103,9 @@ export default {
     eventRender(info) {
     // {description: "Lecture", department: "BioChemistry"}
     },
-    getUserGroups() {
+    displayGroups() {
       this.isGroupsModalVisible = true;
-      this.$emit('getUserGroups', this.isGroupsModalVisible);
+      this.$emit('displayGroups', this.isGroupsModalVisible);
 
     
     }

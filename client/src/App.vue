@@ -22,7 +22,7 @@
       @eventClick='eventClick'
       @dateClick='dateClick'
       @select='select'
-      @getUserGroups='getUserGroups'
+      @displayGroups='displayGroups'
       />
     </div>
     <div class="centeredModal">
@@ -49,6 +49,7 @@
       :startDate='newEventStartDate'
       :endDate='newEventEndDate'
       :allDay="newEventAllDay"
+      :groupInfo='groupInfoArray'
       />
     </div>
     
@@ -136,6 +137,7 @@ export default {
     },
 
     logout() {
+      this.groupInfoArray = []
       axios.get('logout')
          .then((resp) => {
             this.userLoggedIn = false;
@@ -181,6 +183,7 @@ export default {
       this.eventClickEnd = end
       this.isModalVisible = true
       this.getInvites(id)
+      
     },
     getInvites(id) {
       axios.post('/getinvites',{
@@ -192,6 +195,8 @@ export default {
     },
     dateClick(date){
       this.newEventClickDate = date;
+      console.log("line 199 in dateClick")
+      this.getUserGroups();
       this.showAddEventModal = true;
     },
     select(start, end, fullDay){
@@ -230,8 +235,15 @@ export default {
       })
     },
 
-    getUserGroups() {
+    displayGroups() {
       this.isGroupsModalVisible = true
+      this.getUserGroups()
+
+
+    },
+
+    getUserGroups() {
+      
       this.getCurrentUserID()
       axios.get('/groups')
       .then((response) => {

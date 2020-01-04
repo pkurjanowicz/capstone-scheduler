@@ -6,13 +6,18 @@
             </header>
             <section class="modal-body">
                 <slot name="body">
+                    <!--
+                    <ul>
+                        <li v-for="items in groupInfo" v-bind:key="items">{{ items }}</li>
+                    </ul>
+                    -->
                     <h2>{{this.startDate}} : {{this.endDate}}</h2>
                     <label>Event Name:</label>
                     <input v-model="eventName" v-on:keyup.enter="submitNewEvent"/>
                     <label>Event Details:</label>
                     <textarea v-model="eventDetails" v-on:keyup.enter="submitNewEvent"/>
                     <br>
-                    <label>Invite Friends and/or Groups:</label>
+                    <label>Invite Friends:</label>
                     <input-tags v-model="emails">
                   
                     <div class="emails-input"
@@ -27,10 +32,23 @@
                         </button>
                         </div>
                         <input
-                        class="email-input-text"  placeholder="Add invitee email and/or group name..."
+                        class="email-input-text"  placeholder="Add invitee email..."
                         v-on="inputEventHandlers"
                         v-bind="inputBindings"
                         >
+                    <br>
+                    <!--
+                    Code below will display item from groupInfo but ONLY after
+                    groupsModal has popped up. It does nothing if user
+                    proceeds directly to addEventModal. probably because the array is 
+                    empty at the beginning of every user session. populate groupInfo
+                    with a method at dateClick in App
+                    -->
+                    <p>Invite Groups:</p>
+                    <select  v-for="item in groupInfo" v-bind:key="item">
+                        <option value = "item">{{ item }}</option>
+                        <option value = "1">one</option>
+                    </select>
                     </div>
                     </input-tags>
                     <p id="failedEntry" v-if="failedEntry == true">You must be logged in, set a time, enter an event name, and enter a description.</p>
@@ -68,13 +86,14 @@ export default {
             range: [],
             startTime: this.startDate,
             endTime: this.endDate,
-            failedEntry: false
+            failedEntry: false,
+            selectedGroup: null,
         }
     },
     components: {
         VueTags
     },
-    props: ['userID', 'clearEvents', 'eventsList', 'date', 'startDate', 'endDate', 'allDay'],
+    props: ['userID', 'clearEvents', 'eventsList', 'date', 'startDate', 'endDate', 'allDay', 'groupInfo'],
     methods: {
         close() {
             this.$emit('close');
@@ -130,8 +149,10 @@ export default {
         sendInviteEmails(){
             console.log("emails line 129"  + this.emails)
             axios.post('/sendinvites', {
-                
-                emails: this.emails,
+                //might need another method to pull from a group
+                //that method would be here in addEventModal
+                //pete thinks it needs to be a drop down list of groups
+                emails: this.emails,//add emails here
                 event_id: this.currentEventId
                 
             }).then(() => {
