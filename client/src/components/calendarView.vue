@@ -71,10 +71,12 @@ export default {
       dragStartDate: '',
       dragEndDate: '',
       dragEventID: '',
+      dragEventName: '',
       calendarAllDaySlot: true,
       resizeEventID: '',
       resizeStart:'',
-      resizeEnd: ''
+      resizeEnd: '',
+      resizeName: '',
     }
   },
   methods: {
