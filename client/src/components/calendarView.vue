@@ -71,7 +71,10 @@ export default {
       dragStartDate: '',
       dragEndDate: '',
       dragEventID: '',
-      calendarAllDaySlot: true
+      calendarAllDaySlot: true,
+      resizeEventID: '',
+      resizeStart:'',
+      resizeEnd: ''
     }
   },
   methods: {
@@ -109,7 +112,10 @@ export default {
       this.$emit('eventDrop', this.dragEventID, this.dragStartDate, this.dragEndDate);
     },
     handleResizeEvent(eventResizeInfo){
-      console.log(eventResizeInfo);
+      this.resizeEventID = eventResizeInfo.event.id;
+      this.resizeStart = eventResizeInfo.event.start;
+      this.resizeEnd = eventResizeInfo.event.end;
+      this.$emit('eventResize', this.resizeEventID, this.resizeStart, this.resizeEnd);
     },
     eventRender(info) {
     // {description: "Lecture", department: "BioChemistry"}
