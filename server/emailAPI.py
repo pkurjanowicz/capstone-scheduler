@@ -15,6 +15,7 @@ gmail_password = gmail_pass
 def sendinvites():
     emails = request.json["emails"]
     event_id = request.json['event_id']
+    custom_message = request.json['custom_message']
     if emails != '':
         for email in emails:
             # Add to DB
@@ -32,14 +33,14 @@ def sendinvites():
             <html>
             <head></head>
             <body>
-                <p>Hi!<br>
-                How are you?<br>
-                <a href='http://127.0.0.1:5000/response?event_id={}&email={}&response=True'><button>Click here to accept</button></a>
-                <button>Click here to reject</button>
-                </p>
+                <p>Hi!</p>
+                <p> Please let me know if you will attend my event!!</p>
+                <p><em> {} </em></p>
+                <p><a href='http://127.0.0.1:5000/response?event_id={}&email={}&response=True'><button>Click here to accept</button></a>
+                <button>Click here to reject</button></p>
             </body>
             </html>
-            """.format(event_id,email)
+            """.format(custom_message,event_id,email)
 
             # Record the MIME types of both parts - text/plain and text/html.
             # part1 = MIMEText(text, 'plain')

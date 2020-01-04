@@ -36,10 +36,18 @@
                     <button class="submit" @click="submitNewEvent">Submit</button>
                     <hr>
                     <!--I don't know if we need to show the emails listed here since they are listed above but I changed them so they are a bulleted list instead of just a comma separeted one. We can remove this section though and just have it on the event details modal. **KS-->
-                    <h3 v-if="emails.length > 0">Invitees</h3>
+                    <!-- <h3 v-if="emails.length > 0">Invitees</h3>
                     <ul>
                         <li v-for="(email, index) in emails" v-bind:key="index">{{ email}}</li>
-                    </ul>
+                    </ul> -->
+                    <h3 v-if="emails.length > 0">Add a Message to the Email:</h3>
+                    <textarea 
+                    v-if="emails.length > 0" 
+                    rows="4" 
+                    cols="40"
+                    v-model='custom_message'
+                    >
+                    </textarea>
                 </slot>
             </section>
         </div>
@@ -67,7 +75,8 @@ export default {
             startTime: this.startDate,
             endTime: this.endDate,
             failedEntry: false,
-            dragEvent: false
+            dragEvent: false,
+            custom_message: '',
         }
     },
     components: {
@@ -129,7 +138,8 @@ export default {
         sendInviteEmails(){
             axios.post('/sendinvites', {
                 emails: this.emails,
-                event_id: this.currentEventId
+                event_id: this.currentEventId,
+                custom_message: this.custom_message
             }).then(() => {
                 this.currentEventId = []
             })
