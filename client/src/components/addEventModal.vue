@@ -37,17 +37,11 @@
                         v-bind="inputBindings"
                         >
                     <br>
-                    <!--
-                    Code below will display item from groupInfo but ONLY after
-                    groupsModal has popped up. It does nothing if user
-                    proceeds directly to addEventModal. probably because the array is 
-                    empty at the beginning of every user session. populate groupInfo
-                    with a method at dateClick in App
-                    -->
+                    
                     <p>Invite Groups:</p>
-                    <select  v-for="item in groupInfo" v-bind:key="item">
-                        <option value = "item">{{ item }}</option>
-                        <option value = "1">one</option>
+                    <select id = "groupsList"  >
+                        <option v-for="item in groupInfo" value = "item">{{ item }}</option>
+                        
                     </select>
                     </div>
                     </input-tags>
@@ -88,6 +82,7 @@ export default {
             endTime: this.endDate,
             failedEntry: false,
             selectedGroup: null,
+            
         }
     },
     components: {
