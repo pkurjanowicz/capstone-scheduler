@@ -348,10 +348,10 @@ export default {
     }
 
   },
-  mounted () {
+  mounted() {
     this.checkSession();
 
-  }
+  } 
 }
 
 

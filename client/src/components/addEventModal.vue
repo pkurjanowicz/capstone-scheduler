@@ -6,11 +6,6 @@
             </header>
             <section class="modal-body">
                 <slot name="body">
-                    <!--
-                    <ul>
-                        <li v-for="items in groupInfo" v-bind:key="items">{{ items }}</li>
-                    </ul>
-                    -->
                     <h2>{{this.startDate}} : {{this.endDate}}</h2>
                     <label>Event Name:</label>
                     <input v-model="eventName" v-on:keyup.enter="submitNewEvent"/>
@@ -19,7 +14,8 @@
                     <br>
                     <label>Invite Friends:</label>
                     <input-tags v-model="emails">
-                  
+                    <br>
+                    
                     <div class="emails-input"
                         slot-scope="{tag,removeTag,inputEventHandlers,inputBindings }">
                         <div v-for="(email, index) in emails"
@@ -39,8 +35,8 @@
                     <br>
                     
                     <p>Invite Groups:</p>
-                    <select id = "groupsList"  >
-                        <option v-for="item in groupInfo" value = "item">{{ item }}</option>
+                    <select id = "groupsList" v-model="selectedGroup" @input="stringify">
+                        <option v-for="item in groupInfo" :value ="item">{{ item }}</option>
                         
                     </select>
                     </div>
@@ -141,19 +137,23 @@ export default {
         this.endTime = this.datetime
         return
         },
+        stringify (value) {
+            console.log("selectedGroup line 146    " + value)
+            
+        },
+
         sendInviteEmails(){
             console.log("emails line 129"  + this.emails)
             axios.post('/sendinvites', {
-                //might need another method to pull from a group
-                //that method would be here in addEventModal
-                //pete thinks it needs to be a drop down list of groups
+                
                 emails: this.emails,//add emails here
                 event_id: this.currentEventId
                 
             }).then(() => {
                 this.currentEventId = []
             })
-        }      
+        }
+        
     }
 }
 </script>
