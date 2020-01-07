@@ -177,7 +177,7 @@ export default {
       this.showAddEventModal = true;
       this.newEventAllDay = fullDay;
     },
-    eventDrop(dragID, dragStart, dragEnd){
+    eventDrop(dragID, dragStart, dragEnd, dragName){
       // Sets start time to UTC
       let dragEventStartDate = moment.utc(dragStart)
       dragStart = dragEventStartDate.toISOString()
@@ -193,6 +193,13 @@ export default {
       .then(() => {
         this.getEvents()
       });
+      axios.post('/eventchanged', {
+        id: dragID,
+        start_time: dragStart,
+        end_time: dragEnd,
+      })
+      .then(() => {
+      })
     },
     eventResize(resizeID, resizeStart, resizeEnd){
       // Sets start time to UTC
@@ -209,6 +216,13 @@ export default {
       .then(() => {
         this.getEvents()
       });
+      axios.post('/eventchanged', {
+        id: resizeID,
+        start_time: resizeStart,
+        end_time: resizeEnd,
+      })
+      .then(() => {
+      })
     },
     closeModal() {
       this.isModalVisible = false;
