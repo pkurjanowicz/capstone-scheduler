@@ -179,12 +179,5 @@ def add_group():
 
     return jsonify(success=True, group_id=new_group.id)
 
-@user_api.route('/groupemails', methods=['POST'])
-def server_group_emails():
 
-    group_invite = request.json["group_invite"]
-    
-    print("test_var in python"    + str(group_invite))
-
-    return jsonify(success=True)
 

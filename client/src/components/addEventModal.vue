@@ -83,7 +83,6 @@ export default {
             endTime: this.endDate,
             failedEntry: false,
             selectedGroup: null,
-            testArray: [],
             
         }
     },
@@ -146,7 +145,7 @@ export default {
         
 
         sendInviteEmails(){
-            console.log("emails line 129"  + this.emails)
+            
             axios.post('/sendinvites', {
                 
                 emails: this.emails,//add emails here
@@ -156,15 +155,9 @@ export default {
                 this.currentEventId = []
             })
         },
-        submitGroupEmails(item) {
-            console.log("groupInfo in submitGroupEmails     " + Object.keys(this.groupInfo))
-            console.log("item in submitGroupEmails    "   + String(item))
-            console.log(JSON.stringify(this.selectedGroup))
-            axios.post('/groupemails', { group_invite: this.selectedGroup })
-            .then((response) => {
-                
-                
-             })
+        submitGroupEmails() {
+            
+            this.emails.push(this.selectedGroup)
 
         },
         

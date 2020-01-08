@@ -195,7 +195,6 @@ export default {
     },
     dateClick(date){
       this.newEventClickDate = date;
-      console.log("line 199 in dateClick")
       this.getUserGroups();
       this.showAddEventModal = true;
     },
@@ -256,12 +255,9 @@ export default {
            let groupNameString = userGroupsResponse[i].group_name
            let groupEmailString = userGroupsResponse[i].group_emails
             
-            this.groupInfoDict[groupNameString] = groupEmailString
-            
-                 
+           this.groupInfoDict[groupNameString] = groupEmailString
           }
         }
-        console.log(this.groupInfoDict)
 
       })
     
