@@ -35,8 +35,8 @@
                     <br>
                     
                     <p>Invite Groups:</p>
-                    <select  name = "groupList" v-model="selectedGroup" @input="submitGroupEmails">
-                        <option  v-for="(item, key) in groupInfo" :item="item" :value ="key">{{ key }} - {{ item }}</option>
+                    <select  name = "groupList" v-model="selectedGroup" v-on:change="submitGroupEmails">
+                        <option  v-for="(item, key) in groupInfo" :value="item">{{ key }} - {{ item }}</option>
                     </select>
                     <!--
                     perhaps value is in a form accessible in Python, and an SQL query can
@@ -82,7 +82,7 @@ export default {
             startTime: this.startDate,
             endTime: this.endDate,
             failedEntry: false,
-            selectedGroup: '',
+            selectedGroup: null,
             testArray: [],
             
         }
@@ -159,7 +159,8 @@ export default {
         submitGroupEmails(item) {
             console.log("groupInfo in submitGroupEmails     " + Object.keys(this.groupInfo))
             console.log("item in submitGroupEmails    "   + String(item))
-            axios.post('/groupemails', { group_invite: item })
+            console.log(JSON.stringify(this.selectedGroup))
+            axios.post('/groupemails', { group_invite: this.selectedGroup })
             .then((response) => {
                 
                 
