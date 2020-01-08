@@ -49,7 +49,7 @@
       :startDate='newEventStartDate'
       :endDate='newEventEndDate'
       :allDay="newEventAllDay"
-      :groupInfo='groupInfoArray'
+      :groupInfo='groupInfoDict'
       />
     </div>
     
@@ -57,7 +57,7 @@
       <groupsModal
         v-if="isGroupsModalVisible==true" 
         :userID='currentUserID'
-        :groupInfo='groupInfoArray'
+        :groupInfo='groupInfoDict'
         @close="closeModal()"
         
       />
@@ -114,7 +114,7 @@ export default {
       showAddEventModal: false,
       eventInvites: '',
       isGroupsModalVisible: false,
-      groupInfoArray: [],
+      groupInfoDict: {},
       
       
     }        
@@ -137,7 +137,7 @@ export default {
     },
 
     logout() {
-      this.groupInfoArray = []
+      this.groupInfoDict = {}
       axios.get('logout')
          .then((resp) => {
             this.userLoggedIn = false;
@@ -253,14 +253,15 @@ export default {
         for (let i = 0; i < userGroupsResponse.length; i++) {
           if (this.currentUserID === userGroupsResponse[i].owner_id) {
 
-            let groupInfoString = userGroupsResponse[i].group_name + 
-            "   " + userGroupsResponse[i].group_emails
-
-            this.groupInfoArray.push(groupInfoString)
+           let groupNameString = userGroupsResponse[i].group_name
+           let groupEmailString = userGroupsResponse[i].group_emails
+            
+            this.groupInfoDict[groupNameString] = groupEmailString
+            
                  
           }
         }
-      
+        console.log(this.groupInfoDict)
 
       })
     

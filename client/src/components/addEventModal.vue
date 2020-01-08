@@ -15,7 +15,7 @@
                     <label>Invite Friends:</label>
                     <input-tags v-model="emails">
                     <br>
-                    
+                    {{ selectedGroup }}
                     <div class="emails-input"
                         slot-scope="{tag,removeTag,inputEventHandlers,inputBindings }">
                         <div v-for="(email, index) in emails"
@@ -35,10 +35,15 @@
                     <br>
                     
                     <p>Invite Groups:</p>
-                    <select id = "groupsList" v-model="selectedGroup" @input="stringify">
-                        <option v-for="item in groupInfo" :value ="item">{{ item }}</option>
-                        
+                    <select  name = "groupList" v-model="selectedGroup" @input="submitGroupEmails">
+                        <option  v-for="(item, key) in groupInfo" :item="item" :value ="key">{{ key }} - {{ item }}</option>
                     </select>
+                    <!--
+                    perhaps value is in a form accessible in Python, and an SQL query can
+                    be run with it accordingly
+                    -->
+                        
+                    
                     </div>
                     </input-tags>
                     <p id="failedEntry" v-if="failedEntry == true">You must be logged in, set a time, enter an event name, and enter a description.</p>
@@ -77,7 +82,8 @@ export default {
             startTime: this.startDate,
             endTime: this.endDate,
             failedEntry: false,
-            selectedGroup: null,
+            selectedGroup: '',
+            testArray: [],
             
         }
     },
@@ -137,10 +143,7 @@ export default {
         this.endTime = this.datetime
         return
         },
-        stringify (value) {
-            console.log("selectedGroup line 146    " + value)
-            
-        },
+        
 
         sendInviteEmails(){
             console.log("emails line 129"  + this.emails)
@@ -152,7 +155,17 @@ export default {
             }).then(() => {
                 this.currentEventId = []
             })
-        }
+        },
+        submitGroupEmails(item) {
+            console.log("groupInfo in submitGroupEmails     " + Object.keys(this.groupInfo))
+            console.log("item in submitGroupEmails    "   + String(item))
+            axios.post('/groupemails', { group_invite: item })
+            .then((response) => {
+                
+                
+             })
+
+        },
         
     }
 }

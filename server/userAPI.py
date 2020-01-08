@@ -5,6 +5,7 @@ from datetime import datetime
 import os
 import flask
 from sqlalchemy.exc import IntegrityError
+import json
 
 user_api = Blueprint('user_api', __name__)
 
@@ -177,4 +178,13 @@ def add_group():
         db.session.commit()
 
     return jsonify(success=True, group_id=new_group.id)
+
+@user_api.route('/groupemails', methods=['POST'])
+def server_group_emails():
+
+    group_invite = request.json["group_invite"]
+    
+    print("test_var in python"    + str(group_invite))
+
+    return jsonify(success=True)
 
