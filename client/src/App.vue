@@ -23,6 +23,8 @@
       @dateClick='dateClick'
       @select='select'
       @displayGroups='displayGroups'
+      @eventDrop='eventDrop'
+      @eventResize='eventResize'
       />
     </div>
     <div class="centeredModal">
@@ -115,6 +117,7 @@ export default {
       eventInvites: '',
       isGroupsModalVisible: false,
       groupInfoDict: {},
+      dragEvent: false,
       
       
     }        
@@ -183,6 +186,7 @@ export default {
       this.eventClickEnd = end
       this.isModalVisible = true
       this.getInvites(id)
+      this.selectedEventId = id
       
     },
     getInvites(id) {

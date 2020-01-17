@@ -7,7 +7,7 @@ from email.mime.text import MIMEText
 
 email_api = Blueprint('email_api', __name__)
 gmail_user = 'pkurjanowicz10@gmail.com'
-gmail_password = 'AtYoqLFPDQpTfrpWKT.zLP*4FU'
+gmail_password = 'i.qK9ryssXTUfMD'
 
 @email_api.route('/sendinvites', methods=['POST'])
 def sendinvites():

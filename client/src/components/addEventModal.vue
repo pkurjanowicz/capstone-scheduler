@@ -83,6 +83,8 @@ export default {
             endTime: this.endDate,
             failedEntry: false,
             selectedGroup: null,
+            dragEvent: false,
+            custom_message: '',
             
         }
     },
@@ -117,7 +119,9 @@ export default {
                 return
             }
            
-            axios.post('/newevent', { owner_id: this.userID, event_name: this.eventName, event_details: this.eventDetails, event_start_time: this.startTime, event_end_time: this.endTime, all_day: this.allDay})
+            axios.post('/newevent', { owner_id: this.userID, event_name: this.eventName, event_details: this.eventDetails, 
+                                    event_start_time: this.startTime, event_end_time: this.endTime, 
+                                    all_day: this.allDay, drag: this.dragEvent})
             .then((response) => {
                 
                 this.eventName = ''
@@ -150,6 +154,9 @@ export default {
                 
                 emails: this.emails,//add emails here
                 event_id: this.currentEventId
+                emails: this.emails,
+                event_id: this.currentEventId,
+                custom_message: this.custom_message,
                 
             }).then(() => {
                 this.currentEventId = []

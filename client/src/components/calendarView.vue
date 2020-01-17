@@ -63,6 +63,15 @@ export default {
       selectEndDate: '',
       selectAllDay: false,
       isGroupsModalVisible: false,
+      dragStartDate: '',
+      dragEndDate: '',
+      dragEventID: '',
+      dragEventName: '',
+      calendarAllDaySlot: true,
+      resizeEventID: '',
+      resizeStart:'',
+      resizeEnd: '',
+      resizeName: '',
       
     }
   },
@@ -98,6 +107,18 @@ export default {
       this.selectEndDate = info.endStr;
       this.selectAllDay = info.allDay;
       this.$emit('select', this.selectStartDate, this.selectEndDate, this.selectAllDay);
+    },
+    handleDragEvent(eventDropInfo){
+      this.dragEventID = eventDropInfo.event.extendedProps.id;
+      this.dragStartDate = eventDropInfo.event.start;
+      this.dragEndDate = eventDropInfo.event.end;
+      this.$emit('eventDrop', this.dragEventID, this.dragStartDate, this.dragEndDate);
+    },
+    handleResizeEvent(eventResizeInfo){
+      this.resizeEventID = eventResizeInfo.event.id;
+      this.resizeStart = eventResizeInfo.event.start;
+      this.resizeEnd = eventResizeInfo.event.end;
+      this.$emit('eventResize', this.resizeEventID, this.resizeStart, this.resizeEnd);
     },
     
     eventRender(info) {
