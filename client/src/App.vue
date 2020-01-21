@@ -5,16 +5,6 @@
       
     <button v-on:click="logout();">Logout</button>
 
-    <!-- Make API call to find time at specific location -->
-    <input type="checkbox" class="check" id="timeCheckbox" v-model="timeCheckbox">
-    <label for="timeCheckbox">Check this box to find the current time for a specific location</label>
-  
-    <br>
-    <!-- list all events for current user -->
-    <!-- <h2>My events</h2>
-    <button @click="getEvents">Update my events</button>
-    <br> -->
-    <!--does a modal for groups need to be enclosed within calendar_eventdetails div? -->
   <div class="calendar_eventdetails"> 
     <div style="width:100%;">
       <calendarView
