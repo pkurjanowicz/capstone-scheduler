@@ -53,14 +53,10 @@ methods: {
     },
 
   },
-  mounted() {
-    this.checkSession();
-  }
-
-
 
 }
 </script>
+
 <style>
 .boxes {
   display: flex;

@@ -13,6 +13,7 @@ class Event(db.Model):
     start_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
     all_day = db.Column(db.Boolean)
+    drag = db.Column(db.Boolean)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     # shared_ids = db.Column(db.Integer, db.ForeignKey("user.id"))
 

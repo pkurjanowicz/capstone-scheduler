@@ -6,6 +6,7 @@ from db_instance import db
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
 
+
 """
 Code below is Mac specific and must be included for all Mac users
 
@@ -13,10 +14,7 @@ project_paths = project_dir.split("/")
 project_paths.pop()
 project_paths.append('db')
 project_dir = "/".join(project_paths)
-
 """
-
-
 
 def create_app():
     app = Flask(__name__,
@@ -35,3 +33,4 @@ def create_app():
 def setup_database(app):
     with app.app_context():
         db.create_all()
+        # db.drop_all()
