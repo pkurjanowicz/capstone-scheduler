@@ -3,17 +3,8 @@
     
     <div v-if="userLoggedIn" >
       
-    <button v-on:click="logout();">Logout</button>
+    <button v-on:click="logout()">Logout</button>
 
-    <!-- Make API call to find time at specific location -->
-    <input type="checkbox" class="check" id="timeCheckbox" v-model="timeCheckbox">
-    <label for="timeCheckbox">Check this box to find the current time for a specific location</label>
-  
-    <br>
-    <!-- list all events for current user -->
-    <!-- <h2>My events</h2>
-    <button @click="getEvents">Update my events</button>
-    <br> -->
   <div class="calendar_eventdetails"> 
     <div style="width:100%;">
       <calendarView
@@ -21,6 +12,8 @@
       @eventClick='eventClick'
       @dateClick='dateClick'
       @select='select'
+      @eventDrop='eventDrop'
+      @eventResize='eventResize'
       />
     </div>
     <div class="centeredModal">
@@ -32,6 +25,7 @@
         :start='eventClickStart'
         :end='eventClickEnd'
         :invites='eventInvites'
+        @deleteEvent='deleteEventNow'
       />
     </div>
     <!-- Enter event information -->
@@ -49,7 +43,6 @@
       :allDay="newEventAllDay"
       />
     </div>
-
   </div>
   </div>
   
@@ -59,6 +52,7 @@
   <div v-else >
       <login v-on:enterLoginInfo="enterLoginInfo" or v-on:register="register" />
   </div>
+  {{this.selectedEventId}}
   </div>
   
 </template>
@@ -94,7 +88,9 @@ export default {
       sharedUsers: [], 
       newEventClickDate: '',
       showAddEventModal: false,
+      selectedEventId: '',
       eventInvites: '',
+      dragEvent: false
     }        
   },
   components: {
@@ -110,6 +106,9 @@ export default {
         axios.get('checksession')
         .then((resp) => {
             this.userLoggedIn = resp.data.session
+
+            this.getCurrentUserID()
+            this.getEvents()
       })
     },
 
@@ -117,24 +116,29 @@ export default {
       axios.get('logout')
          .then((resp) => {
             this.userLoggedIn = false;
+            this.userRegistrationActive = false;
     })
       
     },
     enterLoginInfo (value) { 
      this.userLoggedIn = value
-     if (this.userLoggedIn === true)
-        this.getCurrentUserID();
+
+     if (this.userLoggedIn === true) {
+        this.getCurrentUserID()
+        this.getEvents()
+     }
     },
 
     register (value) {
      this.userRegistrationActive = value
-     if (this.userLoggedIn === true)
-        this.getCurrentUserID();
      
     },
 
     enterNewUserInfo (value) {
       this.userLoggedIn = value
+      if (this.userLoggedIn === true)
+        this.getCurrentUserID();
+      
     },
 
     sendInviteEmails(){
@@ -144,9 +148,6 @@ export default {
       }).then(() => {
         this.currentEventId = []
       })
-    
-    
-    
   },
  
     eventClick(title, description, start, end, id) {
@@ -156,13 +157,13 @@ export default {
       this.eventClickEnd = end
       this.isModalVisible = true
       this.getInvites(id)
+      this.selectedEventId = id
     },
     getInvites(id) {
       axios.post('/getinvites',{
         event_id: id
       }).then(resp => {
         this.eventInvites = resp.data.all_invites
-        console.log(this.eventInvites)
       })
     },
     dateClick(date){
@@ -176,16 +177,61 @@ export default {
       this.showAddEventModal = true;
       this.newEventAllDay = fullDay;
     },
+    eventDrop(dragID, dragStart, dragEnd, dragName){
+      // Sets start time to UTC
+      let dragEventStartDate = moment.utc(dragStart)
+      dragStart = dragEventStartDate.toISOString()
+      dragStart = dragEventStartDate.format("YYYY-MM-DD HH:mm:ss")
+
+      // Sets end time to UTC.
+      let dragEventEndDate = moment.utc(dragEnd)
+      dragEnd = dragEventEndDate.toISOString()
+      dragEnd = dragEventEndDate.format("YYYY-MM-DD HH:mm:ss")
+      this.dragEvent = true;
+
+      axios.patch('/updateevent', { id: dragID, start_time: dragStart, end_time: dragEnd, drag: this.dragEvent})
+      .then(() => {
+        this.getEvents()
+      });
+      axios.post('/eventchanged', {
+        id: dragID,
+        start_time: dragStart,
+        end_time: dragEnd,
+      })
+      .then(() => {
+      })
+    },
+    eventResize(resizeID, resizeStart, resizeEnd){
+      // Sets start time to UTC
+      let resizeEventStartDate = moment.utc(resizeStart)
+      resizeStart = resizeEventStartDate.toISOString()
+      resizeStart = resizeEventStartDate.format("YYYY-MM-DD HH:mm:ss")
+
+      // Sets end time to UTC.
+      let resizeEventEndDate = moment.utc(resizeEnd)
+      resizeEnd = resizeEventEndDate.toISOString()
+      resizeEnd = resizeEventEndDate.format("YYYY-MM-DD HH:mm:ss");
+
+      axios.patch('/updateevent', { id: resizeID, start_time: resizeStart, end_time: resizeEnd, drag: false})
+      .then(() => {
+        this.getEvents()
+      });
+      axios.post('/eventchanged', {
+        id: resizeID,
+        start_time: resizeStart,
+        end_time: resizeEnd,
+      })
+      .then(() => {
+      })
+    },
     closeModal() {
       this.isModalVisible = false;
       this.showAddEventModal = false;
     },
-    deleteEvent(id) {
-      // There is currently an issue with the delete button failing to remove list items sometimes.
-      // Refreshing the page restores proper functionality.
-      // Update: perhaps it's related to a potential race condition, where the updated list isn't properly rendered in time.
-      axios.delete('/deleteevent', {data: { event_id: id } })
+    deleteEventNow() {
+      axios.post('/deleteevent', {event_id: this.selectedEventId })
       .then(() => {
+        this.closeModal()
         this.getEvents()
       })
     },
@@ -201,7 +247,7 @@ export default {
     getCurrentUserID() {
       axios.get('/user')
       .then((response) => {
-        
+        //no console log here at first registration
         this.currentUserID = response.data.usernames
         console.log("currentuserid line    "   + this.currentUserID)
         
@@ -252,25 +298,30 @@ export default {
         for (let i = 0; i < this.eventResponseNames.length; i++) {
           //if the event is all day keep the time in utc, otherwise it will change the start time to the previous day **KS
           let stringConvertStartTime = this.eventResponseStartTime[i].start_time
-          if (this.eventResponseStartTime[i].all_day == false){
-            stringConvertStartTime = this.utcToLocalTime(stringConvertStartTime);
-          }
           let stringConvertEndTime = this.eventResponseEndTime[i].end_time
-          if (this.eventResponseStartTime[i].all_day == false){
+          if (!this.eventResponseStartTime[i].drag) {
+            if (this.eventResponseStartTime[i].all_day == false){
+              stringConvertStartTime = this.utcToLocalTime(stringConvertStartTime);
+              stringConvertEndTime = this.utcToLocalTime(stringConvertEndTime);
+            } 
+          } else {
+            stringConvertStartTime = this.utcToLocalTime(stringConvertStartTime);
             stringConvertEndTime = this.utcToLocalTime(stringConvertEndTime);
-          }
+          }     
+             
           //the zipped event must be in this format in order for calendarview to display it(as an object) **PK
           
           this.zippedEvent.push({
             title: this.eventResponseNames[i].event_name, 
             start: stringConvertStartTime,
             end: stringConvertEndTime,
+            id: currentResponse[i].id,
             extendedProps: {
               title: this.eventResponseNames[i].event_name,
               description: this.eventResponseDetails[i].details,
               start: stringConvertStartTime,
               end: stringConvertEndTime, 
-              id: this.eventResponseID[i].id,
+              id: currentResponse[i].id,
             },
             })
             //  ** PK
@@ -291,7 +342,6 @@ export default {
   },
   mounted () {
     this.checkSession();
-
   }
 }
 

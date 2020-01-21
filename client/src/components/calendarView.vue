@@ -25,10 +25,15 @@
       :plugins="calendarPlugins"
       :weekends="calendarWeekends"
       :selectable='calendarSelectable'
+      :editable="calendarEditable"
       :events="calendarEvents"
+      :allDaySlot="calendarAllDaySlot"
+      :allDayMaintainDuration="calendarAllDayMaintainDuration"
       @dateClick="handleDateClick"
       @eventClick="handleEventClick"
       @select="handleSelectClick"
+      @eventDrop="handleDragEvent"
+      @eventResize="handleResizeEvent"
       />
   </div>
 </template>
@@ -53,14 +58,25 @@ export default {
         interactionPlugin // needed for dateClick ** PK
       ],
       timeZone: 'local',
+      calendarEditable: true,
       calendarWeekends: true,
       calendarSelectable: true,
+      calendarAllDayMaintainDuration: true,
       eventClickTitle: '',
       eventClickDetails: '',
       newEventClickDate: '',
       selectStartDate: '',
       selectEndDate: '',
-      selectAllDay: false
+      selectAllDay: false,
+      dragStartDate: '',
+      dragEndDate: '',
+      dragEventID: '',
+      dragEventName: '',
+      calendarAllDaySlot: true,
+      resizeEventID: '',
+      resizeStart:'',
+      resizeEnd: '',
+      resizeName: '',
     }
   },
   methods: {
@@ -72,8 +88,6 @@ export default {
       calendarApi.gotoDate('2000-01-01'); // call a method on the Calendar object ** PK
     },
     handleDateClick(arg) {
-      // console.log('this is the date:'+ arg.date);
-      // console.log(arg);
       /* TODO This is for you Kristin to put in the modal view show function, 
       I have provided you the arg.date here so you can auto populate that ** PK */
       this.newEventClickDate = arg.date;
@@ -88,13 +102,22 @@ export default {
       this.$emit('eventClick', this.eventClickTitle, this.eventClickDetails, this.eventClickStart, this.eventClickEnd, this.eventClickId) 
     },
     handleSelectClick(info) {
-      // console.log('selected ' + info.startStr + ' to ' + info.endStr);
-      // console.log('selected date ' + info.start + ' to ' + info.end);
-      // console.log('all day?' + info.allDay);
       this.selectStartDate = info.startStr;
       this.selectEndDate = info.endStr;
       this.selectAllDay = info.allDay;
       this.$emit('select', this.selectStartDate, this.selectEndDate, this.selectAllDay);
+    },
+    handleDragEvent(eventDropInfo){
+      this.dragEventID = eventDropInfo.event.extendedProps.id;
+      this.dragStartDate = eventDropInfo.event.start;
+      this.dragEndDate = eventDropInfo.event.end;
+      this.$emit('eventDrop', this.dragEventID, this.dragStartDate, this.dragEndDate);
+    },
+    handleResizeEvent(eventResizeInfo){
+      this.resizeEventID = eventResizeInfo.event.id;
+      this.resizeStart = eventResizeInfo.event.start;
+      this.resizeEnd = eventResizeInfo.event.end;
+      this.$emit('eventResize', this.resizeEventID, this.resizeStart, this.resizeEnd);
     },
     eventRender(info) {
     // {description: "Lecture", department: "BioChemistry"}

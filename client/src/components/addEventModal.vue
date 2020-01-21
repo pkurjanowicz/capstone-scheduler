@@ -36,10 +36,18 @@
                     <button class="submit" @click="submitNewEvent">Submit</button>
                     <hr>
                     <!--I don't know if we need to show the emails listed here since they are listed above but I changed them so they are a bulleted list instead of just a comma separeted one. We can remove this section though and just have it on the event details modal. **KS-->
-                    <h3 v-if="emails.length > 0">Invitees</h3>
+                    <!-- <h3 v-if="emails.length > 0">Invitees</h3>
                     <ul>
                         <li v-for="(email, index) in emails" v-bind:key="index">{{ email}}</li>
-                    </ul>
+                    </ul> -->
+                    <h3 v-if="emails.length > 0">Add a Message to the Email:</h3>
+                    <textarea 
+                    v-if="emails.length > 0" 
+                    rows="4" 
+                    cols="40"
+                    v-model='custom_message'
+                    >
+                    </textarea>
                 </slot>
             </section>
         </div>
@@ -56,7 +64,6 @@ export default {
     name: "addEventModal",
     data() {
         return{
-            userID: '',
             emails: [],
             timeCheckbox: false,  
             eventName: '',
@@ -67,7 +74,9 @@ export default {
             range: [],
             startTime: this.startDate,
             endTime: this.endDate,
-            failedEntry: false
+            failedEntry: false,
+            dragEvent: false,
+            custom_message: '',
         }
     },
     components: {
@@ -81,6 +90,7 @@ export default {
         submitNewEvent() {
             this.clearEvents()
             this.failedEntry = false
+            this.dragEvent = false
 
             // Selects start and end times depending on if range is selected or not.
             // this.setStartTime()
@@ -100,7 +110,7 @@ export default {
                 return
             }
 
-            axios.post('/newevent', { owner_id: this.userID, event_name: this.eventName, event_details: this.eventDetails, event_start_time: this.startTime, event_end_time: this.endTime, all_day: this.allDay})
+            axios.post('/newevent', { owner_id: this.userID, event_name: this.eventName, event_details: this.eventDetails, event_start_time: this.startTime, event_end_time: this.endTime, all_day: this.allDay, drag: this.dragEvent})
             .then((response) => {
                 this.eventName = ''
                 this.eventDetails = ''
@@ -108,6 +118,7 @@ export default {
                 this.range = ''
                 this.endTime = ''
                 this.all_day = false
+                this.dragEvent = false
                 this.eventsList()
                 this.currentEventId = response.data.event_id
                 this.sendInviteEmails()
@@ -127,7 +138,8 @@ export default {
         sendInviteEmails(){
             axios.post('/sendinvites', {
                 emails: this.emails,
-                event_id: this.currentEventId
+                event_id: this.currentEventId,
+                custom_message: this.custom_message
             }).then(() => {
                 this.currentEventId = []
             })

@@ -3,6 +3,7 @@
         <div class="modal">
             <header class="modal-header">
                 <button class='x-out-button' @click="close"> X </button>
+                <button class= 'delete-event' @click='deleteEvent'>Delete event</button>
             </header>
             <section class="modal-body">
                 <slot name="body">
@@ -26,6 +27,9 @@ export default {
         close() {
         this.$emit('close');
         },
+        deleteEvent() {
+        this.$emit('deleteEvent');
+        },
         isAccepted(invite) {
             if (invite.accepted == true) {
                 return 'is-coming'
@@ -38,6 +42,7 @@ export default {
 </script>
 
 <style scoped>
+
 .invites {
     display:flex;
     flex-direction: column;

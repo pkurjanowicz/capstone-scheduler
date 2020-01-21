@@ -16,10 +16,6 @@ project_paths.append('db')
 project_dir = "/".join(project_paths)
 """
 
-
-
-
-
 def create_app():
     app = Flask(__name__,
         static_folder = "./dist/static",
@@ -37,3 +33,4 @@ def create_app():
 def setup_database(app):
     with app.app_context():
         db.create_all()
+        # db.drop_all()

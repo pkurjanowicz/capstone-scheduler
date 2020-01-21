@@ -3,7 +3,7 @@
   
     <input v-model="enteredUserName" id="enteredUserName" /><label for="enteredUserName"> Enter your User Name</label>
     <br>
-    <input v-model="enteredPassword"/><label for="enteredPassword"> Enter your password</label>
+    <input v-model="enteredPassword" type="password" /><label for="enteredPassword"> Enter your password</label>
     <br>
     <button v-on:click="enterLoginInfo();">Login to the Purple Cape Scheduler</button>
     <br>
@@ -53,14 +53,10 @@ methods: {
     },
 
   },
-  mounted() {
-    this.checkSession();
-  }
-
-
 
 }
 </script>
+
 <style>
 .boxes {
   display: flex;
