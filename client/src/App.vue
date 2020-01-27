@@ -14,6 +14,7 @@
       @select='select'
       @eventDrop='eventDrop'
       @eventResize='eventResize'
+      @showFacebook='showFacebook'
       />
     </div>
     <div class="centeredModal">
@@ -43,6 +44,15 @@
       :allDay="newEventAllDay"
       />
     </div>
+    <div class="centeredModal">
+      <!-- Modal window -->
+      <facebookModal 
+      v-if="showFacebookEventModal==true"
+      @close="closeModal()"
+      :userID='currentUserID'
+      :eventsList='getEvents'
+      />
+    </div>
   </div>
   </div>
   
@@ -64,6 +74,7 @@ import register from './components/register.vue'
 import calendarView from './components/calendarView.vue'
 import eventDetailsModal from './components/eventDetailsModal.vue'
 import addEventModal from './components/addEventModal.vue'
+import facebookModal from './components/facebookModal.vue'
 
 let moment = require('moment')
 
@@ -90,7 +101,8 @@ export default {
       showAddEventModal: false,
       selectedEventId: '',
       eventInvites: '',
-      dragEvent: false
+      dragEvent: false,
+      showFacebookEventModal: false
     }        
   },
   components: {
@@ -99,6 +111,7 @@ export default {
     calendarView,
     eventDetailsModal,
     addEventModal,
+    facebookModal
   },
   methods: {
 
@@ -210,9 +223,13 @@ export default {
         this.getEvents()
       });
     },
+    showFacebook(showFacebook){
+      this.showFacebookEventModal = showFacebook;
+    },
     closeModal() {
       this.isModalVisible = false;
       this.showAddEventModal = false;
+      this.showFacebookEventModal = false;
     },
     deleteEventNow() {
       axios.post('/deleteevent', {event_id: this.selectedEventId })
