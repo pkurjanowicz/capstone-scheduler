@@ -9,11 +9,13 @@ from secrets import gmail_pass
 
 email_api = Blueprint('email_api', __name__)
 gmail_user = 'pkurjanowicz10@gmail.com'
+gmail_password = 'xyxyxyx'
 gmail_password = gmail_pass
 
 @email_api.route('/sendinvites', methods=['POST'])
 def sendinvites():
     emails = request.json["emails"]
+    print("emails line 15    " + str(emails))
     event_id = request.json['event_id']
     custom_message = request.json['custom_message']
     if emails != '':
