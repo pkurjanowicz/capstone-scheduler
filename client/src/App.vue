@@ -12,6 +12,7 @@
       @eventClick='eventClick'
       @dateClick='dateClick'
       @select='select'
+      @displayGroups='displayGroups'
       @eventDrop='eventDrop'
       @eventResize='eventResize'
       @showFacebook='showFacebook'
@@ -42,6 +43,17 @@
       :startDate='newEventStartDate'
       :endDate='newEventEndDate'
       :allDay="newEventAllDay"
+      :groupInfo='groupInfoDict'
+      />
+    </div>
+    
+    <div class="centeredModal">
+      <groupsModal
+        v-if="isGroupsModalVisible==true" 
+        :userID='currentUserID'
+        :groupInfo='groupInfoDict'
+        @close="closeModal()"
+        
       />
     </div>
     <div class="centeredModal">
@@ -54,6 +66,8 @@
       />
     </div>
   </div>
+
+    
   </div>
   
   <div v-else-if="userRegistrationActive" >
@@ -75,6 +89,7 @@ import calendarView from './components/calendarView.vue'
 import eventDetailsModal from './components/eventDetailsModal.vue'
 import addEventModal from './components/addEventModal.vue'
 import facebookModal from './components/facebookModal.vue'
+import groupsModal from './components/groupsModal.vue'
 
 let moment = require('moment')
 
@@ -90,19 +105,25 @@ export default {
       inputUserName: '',
       currentUserID: '',
       currentUser: '',
+      userGroups: '',
       eventResponseNames: [],
       eventResponseDetails: [],
       eventResponseStartTime: [],
       eventResponseEndTime: [],
       eventResponseID: [],
       zippedEvent: [],
+      zippedGroup: [],
       sharedUsers: [], 
       newEventClickDate: '',
       showAddEventModal: false,
       selectedEventId: '',
       eventInvites: '',
       dragEvent: false,
-      showFacebookEventModal: false
+      showFacebookEventModal: false,
+      isGroupsModalVisible: false,
+      groupInfoDict: {},
+      dragEvent: false,
+      
     }        
   },
   components: {
@@ -111,7 +132,8 @@ export default {
     calendarView,
     eventDetailsModal,
     addEventModal,
-    facebookModal
+    facebookModal,
+    groupsModal,
   },
   methods: {
 
@@ -126,6 +148,7 @@ export default {
     },
 
     logout() {
+      this.groupInfoDict = {}
       axios.get('logout')
          .then((resp) => {
             this.userLoggedIn = false;
@@ -164,6 +187,7 @@ export default {
   },
  
     eventClick(title, description, start, end, id) {
+      
       this.eventClickTitle = title
       this.eventClickDescription = description
       this.eventClickStart = start
@@ -171,6 +195,7 @@ export default {
       this.isModalVisible = true
       this.getInvites(id)
       this.selectedEventId = id
+      
     },
     getInvites(id) {
       axios.post('/getinvites',{
@@ -181,6 +206,7 @@ export default {
     },
     dateClick(date){
       this.newEventClickDate = date;
+      this.getUserGroups();
       this.showAddEventModal = true;
     },
     select(start, end, fullDay){
@@ -190,7 +216,7 @@ export default {
       this.showAddEventModal = true;
       this.newEventAllDay = fullDay;
     },
-    eventDrop(dragID, dragStart, dragEnd){
+    eventDrop(dragID, dragStart, dragEnd, dragName){
       // Sets start time to UTC
       let dragEventStartDate = moment.utc(dragStart)
       dragStart = dragEventStartDate.toISOString()
@@ -206,6 +232,13 @@ export default {
       .then(() => {
         this.getEvents()
       });
+      axios.post('/eventchanged', {
+        id: dragID,
+        start_time: dragStart,
+        end_time: dragEnd,
+      })
+      .then(() => {
+      })
     },
     eventResize(resizeID, resizeStart, resizeEnd){
       // Sets start time to UTC
@@ -222,6 +255,13 @@ export default {
       .then(() => {
         this.getEvents()
       });
+      axios.post('/eventchanged', {
+        id: resizeID,
+        start_time: resizeStart,
+        end_time: resizeEnd,
+      })
+      .then(() => {
+      })
     },
     showFacebook(showFacebook){
       this.showFacebookEventModal = showFacebook;
@@ -230,6 +270,7 @@ export default {
       this.isModalVisible = false;
       this.showAddEventModal = false;
       this.showFacebookEventModal = false;
+      this.isGroupsModalVisible = false;
     },
     deleteEventNow() {
       axios.post('/deleteevent', {event_id: this.selectedEventId })
@@ -241,20 +282,39 @@ export default {
     clearEventList() {
       this.zippedEvent = []
     },
-    //use function below but don't break it
-    // perhaps if userLoggedIN === true getCurrentUserID()
-    //currentResponse is acquiring the correct ID but only
-    //at first login of user, not after refresh of browser, errors
-    //that it does get after first login I don't recognize
+    
 
     getCurrentUserID() {
       axios.get('/user')
-      .then((response) => {
-        //no console log here at first registration
+      .then((response) => {  
         this.currentUserID = response.data.usernames
-        console.log("currentuserid line    "   + this.currentUserID)
-        
       })
+    },
+
+    displayGroups() {
+      this.isGroupsModalVisible = true
+      this.getUserGroups()
+    },
+
+    getUserGroups() {
+      this.getCurrentUserID()
+      axios.get('/groups')
+      .then((response) => {
+        
+        let userGroupsResponse = response.data.usergroups
+        
+        for (let i = 0; i < userGroupsResponse.length; i++) {
+          if (this.currentUserID === userGroupsResponse[i].owner_id) {
+
+           let groupNameString = userGroupsResponse[i].group_name
+           let groupEmailString = userGroupsResponse[i].group_emails
+            
+           this.groupInfoDict[groupNameString] = groupEmailString
+          }
+        }
+
+      })
+    
     },
     submitNewUsername() {
       // I believe there is a race condition somewhere that sometimes prevents the list of events from updating on the webpage.
@@ -283,6 +343,7 @@ export default {
       this.clearEventList()
     },
     getEvents() {
+      
       this.clearEventList()
       axios.get('/getevents')
       .then((response) => {
@@ -343,9 +404,10 @@ export default {
     }
 
   },
-  mounted () {
+  mounted() {
     this.checkSession();
-  }
+
+  } 
 }
 
 

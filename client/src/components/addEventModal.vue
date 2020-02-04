@@ -14,6 +14,8 @@
                     <br>
                     <label>Invite Friends:</label>
                     <input-tags v-model="emails">
+                    <br>
+                    {{ selectedGroup }}
                     <div class="emails-input"
                         slot-scope="{tag,removeTag,inputEventHandlers,inputBindings }">
                         <div v-for="(email, index) in emails"
@@ -30,16 +32,36 @@
                         v-on="inputEventHandlers"
                         v-bind="inputBindings"
                         >
+                    <br>
+                    
+                    <p>Invite Groups:</p>
+                    <select  name = "groupList" v-model="selectedGroup" v-on:change="submitGroupEmails">
+                        <option  v-for="(item, key) in groupInfo" :value="item">{{ key }} - {{ item }}</option>
+                    </select>
+                    <!--
+                    perhaps value is in a form accessible in Python, and an SQL query can
+                    be run with it accordingly
+                    -->
+                        
+                    
                     </div>
                     </input-tags>
                     <p id="failedEntry" v-if="failedEntry == true">You must be logged in, set a time, enter an event name, and enter a description.</p>
                     <button class="submit" @click="submitNewEvent">Submit</button>
                     <hr>
                     <!--I don't know if we need to show the emails listed here since they are listed above but I changed them so they are a bulleted list instead of just a comma separeted one. We can remove this section though and just have it on the event details modal. **KS-->
-                    <h3 v-if="emails.length > 0">Invitees</h3>
+                    <!-- <h3 v-if="emails.length > 0">Invitees</h3>
                     <ul>
                         <li v-for="(email, index) in emails" v-bind:key="index">{{ email}}</li>
-                    </ul>
+                    </ul> -->
+                    <h3 v-if="emails.length > 0">Add a Message to the Email:</h3>
+                    <textarea 
+                    v-if="emails.length > 0" 
+                    rows="4" 
+                    cols="40"
+                    v-model='custom_message'
+                    >
+                    </textarea>
                 </slot>
             </section>
         </div>
@@ -57,7 +79,7 @@ export default {
     data() {
         return{
             emails: [],
-            timeCheckbox: false,  
+            timeCheckbox: false, 
             eventName: '',
             eventDetails: '',
             eventID: '',
@@ -67,18 +89,22 @@ export default {
             startTime: this.startDate,
             endTime: this.endDate,
             failedEntry: false,
-            dragEvent: false
+            selectedGroup: null,
+            dragEvent: false,
+            custom_message: '',
+        
         }
     },
     components: {
         VueTags
     },
-    props: ['userID', 'clearEvents', 'eventsList', 'date', 'startDate', 'endDate', 'allDay'],
+    props: ['userID', 'clearEvents', 'eventsList', 'date', 'startDate', 'endDate', 'allDay', 'groupInfo'],
     methods: {
         close() {
             this.$emit('close');
         },
         submitNewEvent() {
+            
             this.clearEvents()
             this.failedEntry = false
             this.dragEvent = false
@@ -100,9 +126,12 @@ export default {
                 this.failedEntry = true
                 return
             }
-
-            axios.post('/newevent', { owner_id: this.userID, event_name: this.eventName, event_details: this.eventDetails, event_start_time: this.startTime, event_end_time: this.endTime, all_day: this.allDay, drag: this.dragEvent})
+           
+            axios.post('/newevent', { owner_id: this.userID, event_name: this.eventName, event_details: this.eventDetails, 
+                                    event_start_time: this.startTime, event_end_time: this.endTime, 
+                                    all_day: this.allDay, drag: this.dragEvent})
             .then((response) => {
+                
                 this.eventName = ''
                 this.eventDetails = ''
                 this.startTime = ''
@@ -126,14 +155,28 @@ export default {
         this.endTime = this.datetime
         return
         },
+        
+
         sendInviteEmails(){
+            
             axios.post('/sendinvites', {
-                emails: this.emails,
+                
+                emails: this.emails,//add emails here
                 event_id: this.currentEventId
+                emails: this.emails,
+                event_id: this.currentEventId,
+                custom_message: this.custom_message,
+                
             }).then(() => {
                 this.currentEventId = []
             })
-        }      
+        },
+        submitGroupEmails() {
+            
+            this.emails.push(this.selectedGroup)
+
+        },
+        
     }
 }
 </script>

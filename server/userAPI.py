@@ -1,10 +1,11 @@
 from flask import Flask, Blueprint, jsonify, request, redirect, session
 from db_instance import db
-from models import User, Event, Invites
+from models import User, Event, Invites, Groups
 from datetime import datetime
 import os
 import flask
 from sqlalchemy.exc import IntegrityError
+import json
 
 user_api = Blueprint('user_api', __name__)
 
@@ -13,10 +14,6 @@ passBool = ''
 nameBool = ''
 registerBool = ''
 
-"""
-function below is not serving users at first successful registration
-"""
-
 @user_api.route('/user', methods=['GET'])
 def serve_all_users():
 
@@ -24,10 +21,17 @@ def serve_all_users():
         user_usernames = session['test_query']
     except KeyError:
         user_usernames = session['new_user']
-        print("usernames line 30    " + str(user_usernames))
-    
     
     return jsonify({"usernames": user_usernames})
+
+@user_api.route('/groups', methods=['GET'])
+def serve_all_groups():
+   
+    group_instances = db.session.query(Groups).all()
+
+    user_groups = [{"group_name":group.group_name, "group_emails":group.group_emails, "owner_id":group.owner_id} for group in group_instances]
+    
+    return jsonify({"usergroups": user_groups})
 
 @user_api.route('/getevents', methods=['GET'])
 def serve_all_events():
@@ -44,6 +48,7 @@ def get_invites():
     event_id = request.json["event_id"]
     event_invites = Invites.query.filter_by(event_id=event_id).all()
     event_invites_array = [{'email':event_invite.invitee_email, 'accepted': event_invite.accepted} for event_invite in event_invites]
+    
     return jsonify({'all_invites': event_invites_array})
 
 @user_api.route('/usersignup', methods=['POST'])
@@ -176,3 +181,20 @@ def logout():
         del session['new_user']
 
         return jsonify(success=True)
+
+@user_api.route('/newgroup', methods=['POST'])
+def add_group():
+
+    new_group = Groups()
+
+    new_group.group_name = request.json["group_name"]
+    new_group.group_emails = request.json["emails"]
+    new_group.owner_id = request.json["owner_id"]
+    if new_group.group_name != "" and new_group.owner_id != "":
+        db.session.add(new_group)
+        db.session.commit()
+
+    return jsonify(success=True, group_id=new_group.id)
+
+
+

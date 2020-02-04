@@ -1,4 +1,3 @@
-
 // I am using this library in order to build this calendar: https://fullcalendar.io/docs/vue
 
 <template>
@@ -7,6 +6,7 @@
       <button class="button" @click="toggleWeekends">toggle weekends</button>
       <button class="button" @click="gotoPast">go to a date in the past</button>
       <button class="button" @click="addFacebook">Add Facebook Events</button>
+      <button class="button" @click="displayGroups();">your groups</button>
       (also, click a date/time to add an event)
     </div>
     <FullCalendar
@@ -69,14 +69,18 @@ export default {
       selectStartDate: '',
       selectEndDate: '',
       selectAllDay: false,
+      isGroupsModalVisible: false,
       dragStartDate: '',
       dragEndDate: '',
       dragEventID: '',
+      dragEventName: '',
       calendarAllDaySlot: true,
       resizeEventID: '',
       resizeStart:'',
       resizeEnd: '',
       facebook: false
+      resizeName: '',
+      
     }
   },
   methods: {
@@ -124,9 +128,16 @@ export default {
       this.resizeEnd = eventResizeInfo.event.end;
       this.$emit('eventResize', this.resizeEventID, this.resizeStart, this.resizeEnd);
     },
+    
     eventRender(info) {
     // {description: "Lecture", department: "BioChemistry"}
-  }
+    },
+    displayGroups() {
+      this.isGroupsModalVisible = true;
+      this.$emit('displayGroups', this.isGroupsModalVisible);
+
+    
+    }
   }
 }
 
