@@ -15,6 +15,7 @@
       @displayGroups='displayGroups'
       @eventDrop='eventDrop'
       @eventResize='eventResize'
+      @showFacebook='showFacebook'
       />
     </div>
     <div class="centeredModal">
@@ -55,6 +56,15 @@
         
       />
     </div>
+    <div class="centeredModal">
+      <!-- Modal window -->
+      <facebookModal 
+      v-if="showFacebookEventModal==true"
+      @close="closeModal()"
+      :userID='currentUserID'
+      :eventsList='getEvents'
+      />
+    </div>
   </div>
 
     
@@ -78,6 +88,7 @@ import register from './components/register.vue'
 import calendarView from './components/calendarView.vue'
 import eventDetailsModal from './components/eventDetailsModal.vue'
 import addEventModal from './components/addEventModal.vue'
+import facebookModal from './components/facebookModal.vue'
 import groupsModal from './components/groupsModal.vue'
 
 let moment = require('moment')
@@ -107,6 +118,8 @@ export default {
       showAddEventModal: false,
       selectedEventId: '',
       eventInvites: '',
+      dragEvent: false,
+      showFacebookEventModal: false,
       isGroupsModalVisible: false,
       groupInfoDict: {},
       dragEvent: false,
@@ -119,6 +132,7 @@ export default {
     calendarView,
     eventDetailsModal,
     addEventModal,
+    facebookModal,
     groupsModal,
   },
   methods: {
@@ -249,9 +263,13 @@ export default {
       .then(() => {
       })
     },
+    showFacebook(showFacebook){
+      this.showFacebookEventModal = showFacebook;
+    },
     closeModal() {
       this.isModalVisible = false;
       this.showAddEventModal = false;
+      this.showFacebookEventModal = false;
       this.isGroupsModalVisible = false;
     },
     deleteEventNow() {
@@ -268,23 +286,17 @@ export default {
 
     getCurrentUserID() {
       axios.get('/user')
-      .then((response) => {
-        
+      .then((response) => {  
         this.currentUserID = response.data.usernames
-        
-        
       })
     },
 
     displayGroups() {
       this.isGroupsModalVisible = true
       this.getUserGroups()
-
-
     },
 
     getUserGroups() {
-      
       this.getCurrentUserID()
       axios.get('/groups')
       .then((response) => {
@@ -396,7 +408,6 @@ export default {
     this.checkSession();
 
   } 
-  }
 }
 
 

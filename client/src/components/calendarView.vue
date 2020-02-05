@@ -1,4 +1,3 @@
-
 // I am using this library in order to build this calendar: https://fullcalendar.io/docs/vue
 
 <template>
@@ -6,6 +5,7 @@
     <div class='demo-app-top'>
       <button class="button" @click="toggleWeekends">toggle weekends</button>
       <button class="button" @click="gotoPast">go to a date in the past</button>
+      <button class="button" @click="addFacebook">Add Facebook Events</button>
       <button class="button" @click="displayGroups();">your groups</button>
       (also, click a date/time to add an event)
     </div>
@@ -78,6 +78,7 @@ export default {
       resizeEventID: '',
       resizeStart:'',
       resizeEnd: '',
+      facebook: false
       resizeName: '',
       
     }
@@ -89,6 +90,10 @@ export default {
     gotoPast() {
       let calendarApi = this.$refs.fullCalendar.getApi(); // from the ref="..." ** PK
       calendarApi.gotoDate('2000-01-01'); // call a method on the Calendar object ** PK
+    },
+    addFacebook(){
+      this.facebook = true;
+      this.$emit('showFacebook', this.facebook);
     },
     handleDateClick(arg) {
       /* TODO This is for you Kristin to put in the modal view show function, 
@@ -117,6 +122,7 @@ export default {
       this.$emit('eventDrop', this.dragEventID, this.dragStartDate, this.dragEndDate);
     },
     handleResizeEvent(eventResizeInfo){
+      console.log(eventResizeInfo);
       this.resizeEventID = eventResizeInfo.event.id;
       this.resizeStart = eventResizeInfo.event.start;
       this.resizeEnd = eventResizeInfo.event.end;
